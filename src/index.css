@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --color-primary: #2D6A4F;
+  --color-primary-light: #52B788;
+  --color-primary-dark: #1B4332;
+  --color-accent-sand: #E9C46A;
+  --color-accent-terra: #E76F51;
+  --color-background-light: #F4F7F5;
+  --color-background-dark: #10221a;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #e7f3ee;
+  
+  --shadow-soft: 0 20px 25px -5px rgb(45 106 79 / 0.05), 0 8px 10px -6px rgb(45 106 79 / 0.05);
+  --shadow-deep: 0 25px 50px -12px rgb(45 106 79 / 0.15);
+}
+
+@layer base {
+  body {
+    @apply bg-background-light text-primary-dark font-sans antialiased overflow-x-hidden selection:bg-primary-light selection:text-white;
+  }
+}
+
+@layer utilities {
+  .pulse-danger {
+    animation: pulse-border 2s infinite;
+  }
+
+  @keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.4); border-color: rgba(231, 111, 81, 0.8); }
+    70% { box-shadow: 0 0 0 10px rgba(231, 111, 81, 0); border-color: rgba(231, 111, 81, 0.4); }
+    100% { box-shadow: 0 0 0 0 rgba(231, 111, 81, 0); border-color: rgba(231, 111, 81, 0.8); }
+  }
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
