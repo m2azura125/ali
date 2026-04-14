@@ -109,22 +109,30 @@
 </div>
 </div>
 </header>
-<section class="relative w-full overflow-hidden rounded-3xl bg-accent-safe/10 border border-accent-safe/20 shadow-soft transition-all duration-500 hover:shadow-lg group">
-<div class="absolute top-0 right-0 w-64 h-64 bg-accent-safe/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+@php
+    $isKotor = false;
+    if(isset($latestData)) {
+        if($latestData->ph < 6.5 || $latestData->ph > 8.5 || $latestData->ntu > 25 || $latestData->relay_status) {
+            $isKotor = true;
+        }
+    }
+@endphp
+<section id="status-section" class="relative w-full overflow-hidden rounded-3xl {{ $isKotor ? 'bg-red-50 border-red-200' : 'bg-accent-safe/10 border-accent-safe/20' }} shadow-soft transition-all duration-500 hover:shadow-lg group">
+<div id="blur-bg-1" class="absolute top-0 right-0 w-64 h-64 {{ $isKotor ? 'bg-red-200' : 'bg-accent-safe/20' }} rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 <div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2"></div>
 <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between p-8 md:p-12 gap-8">
 <div class="flex flex-col gap-4 max-w-xl">
 <div class="flex items-center gap-3 mb-2">
-<span class="flex items-center justify-center w-12 h-12 rounded-full bg-accent-safe text-white shadow-lg shadow-accent-safe/40">
-<span class="material-symbols-outlined text-[28px]">verified_user</span>
+<span id="status-icon-container" class="flex items-center justify-center w-12 h-12 rounded-full {{ $isKotor ? 'bg-red-500 shadow-red-500/40' : 'bg-accent-safe shadow-accent-safe/40' }} text-white shadow-lg">
+<span id="status-icon" class="material-symbols-outlined text-[28px]">{{ $isKotor ? 'warning' : 'verified_user' }}</span>
 </span>
-<span class="px-4 py-1.5 rounded-full bg-accent-safe/20 text-primary text-sm font-bold tracking-wide uppercase">Status Normal</span>
+<span id="status-badge" class="px-4 py-1.5 rounded-full {{ $isKotor ? 'bg-red-100 text-red-700' : 'bg-accent-safe/20 text-primary' }} text-sm font-bold tracking-wide uppercase">{{ $isKotor ? 'Status Tidak Normal' : 'Status Normal' }}</span>
 </div>
-<h2 class="text-3xl md:text-4xl font-bold text-text leading-tight">
-                            Air Aman Digunakan
+<h2 id="status-text" class="text-3xl md:text-4xl font-bold {{ $isKotor ? 'text-red-700' : 'text-text' }} leading-tight">
+                            {{ $isKotor ? 'Air Tidak Aman Digunakan' : 'Air Aman Digunakan' }}
                         </h2>
-<p class="text-text/70 text-lg leading-relaxed">
-                            Kualitas air optimal untuk kebutuhan sehari-hari. Semua indikator dalam batas wajar.
+<p id="status-desc" class="text-text/70 text-lg leading-relaxed">
+                            {{ $isKotor ? 'Kualitas air tidak memenuhi standar (air kotor). Sedang dalam proses filtrasi atau pembuangan.' : 'Kualitas air optimal untuk kebutuhan sehari-hari. Semua indikator dalam batas wajar.' }}
                         </p>
 </div>
 <div class="flex flex-col items-center lg:items-end gap-3 w-full lg:w-auto mt-4 lg:mt-0">
@@ -217,22 +225,56 @@
 </div>
 <script>
     function updateData() {
-        fetch('/api/latest-sensor-data')
+        fetch('/api/latest-sensor-data?username={{ urlencode($sensorUsername ?? Auth::user()->username ?? '') }}')
             .then(response => response.json())
             .then(data => {
                 if(data) {
                     // Update pH
-                    const phValue = data.ph ? parseFloat(data.ph).toFixed(1) : '0.0';
-                    document.getElementById('ph-value').innerText = phValue;
+                    const phValue = data.ph ? parseFloat(data.ph) : 0;
+                    document.getElementById('ph-value').innerText = phValue.toFixed(1);
                     
                     // Update NTU
-                    const ntuValue = data.ntu ? parseFloat(data.ntu).toFixed(0) : '0';
-                    document.getElementById('ntu-value').innerText = ntuValue;
+                    const ntuValue = data.ntu ? parseFloat(data.ntu) : 0;
+                    document.getElementById('ntu-value').innerText = ntuValue.toFixed(0);
                     
                     // Update Suhu
                     const tempValue = data.temperature ? parseFloat(data.temperature).toFixed(0) : '0';
                     document.getElementById('temp-value').innerHTML = tempValue + '&deg;';
                     
+                    // Cek kondisi air kotor
+                    const isKotor = phValue < 6.5 || phValue > 8.5 || ntuValue > 25 || data.relay_status;
+                    
+                    // Update status elemen UI
+                    const statusSection = document.getElementById('status-section');
+                    const statusIconContainer = document.getElementById('status-icon-container');
+                    const statusIcon = document.getElementById('status-icon');
+                    const statusBadge = document.getElementById('status-badge');
+                    const statusText = document.getElementById('status-text');
+                    const statusDesc = document.getElementById('status-desc');
+                    const blurBg1 = document.getElementById('blur-bg-1');
+                    
+                    if (isKotor) {
+                        statusSection.className = 'relative w-full overflow-hidden rounded-3xl bg-red-50 border border-red-200 shadow-soft transition-all duration-500 hover:shadow-lg group';
+                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-red-500 text-white shadow-lg shadow-red-500/40';
+                        statusIcon.innerText = 'warning';
+                        statusBadge.className = 'px-4 py-1.5 rounded-full bg-red-100 text-red-700 text-sm font-bold tracking-wide uppercase';
+                        statusBadge.innerText = 'Status Tidak Normal';
+                        statusText.innerText = 'Air Tidak Aman Digunakan';
+                        statusText.className = 'text-3xl md:text-4xl font-bold text-red-700 leading-tight';
+                        statusDesc.innerText = 'Kualitas air tidak memenuhi standar (air kotor). Sedang dalam proses filtrasi atau pembuangan.';
+                        if (blurBg1) blurBg1.className = 'absolute top-0 right-0 w-64 h-64 bg-red-200 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2';
+                    } else {
+                        statusSection.className = 'relative w-full overflow-hidden rounded-3xl bg-accent-safe/10 border border-accent-safe/20 shadow-soft transition-all duration-500 hover:shadow-lg group';
+                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-accent-safe text-white shadow-lg shadow-accent-safe/40';
+                        statusIcon.innerText = 'verified_user';
+                        statusBadge.className = 'px-4 py-1.5 rounded-full bg-accent-safe/20 text-primary text-sm font-bold tracking-wide uppercase';
+                        statusBadge.innerText = 'Status Normal';
+                        statusText.innerText = 'Air Aman Digunakan';
+                        statusText.className = 'text-3xl md:text-4xl font-bold text-text leading-tight';
+                        statusDesc.innerText = 'Kualitas air optimal untuk kebutuhan sehari-hari. Semua indikator dalam batas wajar.';
+                        if (blurBg1) blurBg1.className = 'absolute top-0 right-0 w-64 h-64 bg-accent-safe/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2';
+                    }
+
                     // Update Relay Status
                     const relayEl = document.getElementById('relay-status');
                     if (data.relay_status) {

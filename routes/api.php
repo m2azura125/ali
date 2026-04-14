@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\SensorData;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -8,7 +10,27 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/sensor-data', function (Request $request) {
-    $data = new \App\Models\SensorData();
+    $resolvedUserId = null;
+
+    if ($request->filled('user_id')) {
+        $resolvedUserId = User::query()->whereKey($request->user_id)->value('id');
+    } elseif ($request->filled('username')) {
+        $identity = strtolower((string) $request->username);
+        $resolvedUserId = User::query()
+            ->where('role', 'warga')
+            ->where(function ($query) use ($identity) {
+                $query->whereRaw('LOWER(username) = ?', [$identity])
+                    ->orWhereRaw('LOWER(name) = ?', [$identity]);
+            })
+            ->value('id');
+    }
+
+    if (! $resolvedUserId && User::query()->where('role', 'warga')->count() === 1) {
+        $resolvedUserId = User::query()->where('role', 'warga')->value('id');
+    }
+
+    $data = new SensorData();
+    $data->user_id = $resolvedUserId;
     $data->temperature = $request->temperature;
     $data->ph = $request->ph;
     $data->ntu = $request->ntu;
@@ -22,7 +44,28 @@ Route::post('/sensor-data', function (Request $request) {
     ], 200);
 });
 
-Route::get('/latest-sensor-data', function () {
-    $latestData = \App\Models\SensorData::latest()->first();
+Route::get('/latest-sensor-data', function (Request $request) {
+    $query = SensorData::query();
+
+    if ($request->filled('user_id')) {
+        $query->where('user_id', $request->user_id);
+    } elseif ($request->filled('username')) {
+        $identity = strtolower((string) $request->username);
+        $residentId = User::query()
+            ->where('role', 'warga')
+            ->where(function ($userQuery) use ($identity) {
+                $userQuery->whereRaw('LOWER(username) = ?', [$identity])
+                    ->orWhereRaw('LOWER(name) = ?', [$identity]);
+            })
+            ->value('id');
+
+        if ($residentId) {
+            $query->where('user_id', $residentId);
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+    $latestData = $query->latest()->first();
     return response()->json($latestData);
 });

@@ -89,7 +89,7 @@
 <span class="px-3 py-1 rounded-full bg-forest text-white text-xs font-bold tracking-wider uppercase">Admin View</span>
 <span class="flex h-2 w-2 rounded-full bg-mint animate-pulse"></span>
 </div>
-<h1 class="font-serif text-3xl md:text-4xl font-bold text-forest-dark mt-1">Rumah {{ $id }}: Detail Warga</h1>
+<h1 class="font-serif text-3xl md:text-4xl font-bold text-forest-dark mt-1">Detail Warga: {{ $selectedResident->name ?? $id }}</h1>
 </div>
 </div>
 <div class="flex items-center gap-3">
@@ -109,21 +109,21 @@
 <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
 <div>
 <h2 class="font-serif text-2xl font-semibold text-forest-dark">Kualitas Air</h2>
-<p class="text-forest/60 text-sm mt-1">Visualisasi data sensor pH dan kekeruhan</p>
+<p class="text-forest/60 text-sm mt-1">Grafik pH berdasarkan data sensor yang tersimpan</p>
 </div>
 <div class="bg-mist p-1 rounded-full flex items-center">
-<button class="px-4 py-2 rounded-full bg-white text-forest-dark shadow-sm text-sm font-semibold transition-all">24 Jam</button>
-<button class="px-4 py-2 rounded-full hover:bg-white/50 text-forest/70 text-sm font-medium transition-all">7 Hari</button>
-<button class="px-4 py-2 rounded-full hover:bg-white/50 text-forest/70 text-sm font-medium transition-all">30 Hari</button>
+@foreach ($rangeOptions as $rangeKey => $option)
+<a href="{{ url()->current() }}?range={{ $rangeKey }}" class="px-4 py-2 rounded-full text-sm transition-all {{ $range === $rangeKey ? 'bg-white text-forest-dark shadow-sm font-semibold' : 'hover:bg-white/50 text-forest/70 font-medium' }}">
+{{ $option['label'] }}
+</a>
+@endforeach
 </div>
 </div>
 <div class="relative w-full flex-grow min-h-[300px] flex items-end justify-between gap-2 pt-10 pb-2 px-2">
 <div class="absolute left-0 top-0 bottom-8 w-8 flex flex-col justify-between text-xs font-mono text-forest/40">
-<span>9.0</span>
-<span>8.0</span>
-<span>7.0</span>
-<span>6.0</span>
-<span>5.0</span>
+@foreach ($yLabels as $label)
+<span>{{ $label }}</span>
+@endforeach
 </div>
 <div class="ml-8 w-full h-full relative">
 <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
@@ -133,6 +133,7 @@
 <div class="w-full h-px bg-mint/10 border-t border-dashed border-mint/20"></div>
 <div class="w-full h-px bg-mint/10 border-t border-dashed border-mint/20"></div>
 </div>
+@if ($hasChartData)
 <svg class="w-full h-full overflow-visible drop-shadow-xl" preserveaspectratio="none" viewbox="0 0 800 300">
 <defs>
 <lineargradient id="gradientFlow" x1="0" x2="0" y1="0" y2="1">
@@ -140,22 +141,28 @@
 <stop offset="100%" stop-color="#52B788" stop-opacity="0"></stop>
 </lineargradient>
 </defs>
-<path d="M0,150 C50,140 100,160 150,155 C200,150 250,130 300,140 C350,150 400,180 450,170 C500,160 550,120 600,125 C650,130 700,140 750,135 L800,130 L800,300 L0,300 Z" fill="url(#gradientFlow)"></path>
-<path d="M0,150 C50,140 100,160 150,155 C200,150 250,130 300,140 C350,150 400,180 450,170 C500,160 550,120 600,125 C650,130 700,140 750,135 L800,130" fill="none" stroke="#2D6A4F" stroke-linecap="round" stroke-width="3" vector-effect="non-scaling-stroke"></path>
-<circle cx="600" cy="125" fill="#FFFFFF" r="6" stroke="#2D6A4F" stroke-width="3"></circle>
+<path d="{{ $areaPath }}" fill="url(#gradientFlow)"></path>
+<path d="{{ $linePath }}" fill="none" stroke="#2D6A4F" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" vector-effect="non-scaling-stroke"></path>
+<circle cx="{{ $latestPoint['x'] }}" cy="{{ $latestPoint['y'] }}" fill="#FFFFFF" r="6" stroke="#2D6A4F" stroke-width="3"></circle>
 </svg>
-<div class="absolute top-[30%] left-[73%] bg-forest-dark text-white px-3 py-1.5 rounded-lg shadow-lg transform -translate-x-1/2 -translate-y-full">
-<div class="font-mono text-sm font-bold">pH 7.4</div>
-<div class="text-[10px] text-mint/80">14:20 PM</div>
+<div class="absolute bg-forest-dark text-white px-3 py-1.5 rounded-lg shadow-lg transform -translate-x-1/2 -translate-y-full" style="left: calc({{ ($latestPoint['x'] / 800) * 100 }}% + 2rem); top: calc({{ ($latestPoint['y'] / 300) * 100 }}% - 0.5rem);">
+<div class="font-mono text-sm font-bold">pH {{ number_format($latestPoint['ph'], 1) }}</div>
+<div class="text-[10px] text-mint/80">{{ $latestPoint['time'] }}</div>
 <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-2 h-2 bg-forest-dark rotate-45"></div>
 </div>
+@else
+<div class="h-full flex items-center justify-center rounded-2xl border border-dashed border-mint/30 bg-mist/40 text-center px-6">
+<div>
+<p class="text-forest-dark font-semibold">Belum ada data pH untuk ditampilkan.</p>
+<p class="text-sm text-forest/60 mt-1">Grafik akan otomatis mengikuti data sensor asli setelah data masuk ke tabel.</p>
+</div>
+</div>
+@endif
 </div>
 <div class="absolute bottom-0 left-8 right-0 flex justify-between text-xs font-mono text-forest/40 pt-2">
-<span>00:00</span>
-<span>06:00</span>
-<span>12:00</span>
-<span>18:00</span>
-<span>24:00</span>
+@foreach ($xLabels as $label)
+<span>{{ $label }}</span>
+@endforeach
 </div>
 </div>
 </div>
@@ -167,126 +174,29 @@
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-mint text-2xl">water_drop</span>
-<span class="text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-full">Normal</span>
+<span class="text-xs font-bold {{ isset($latestData) && $latestData->ph !== null && $latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ph !== null ? 'text-terra bg-terra/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-full">
+{{ isset($latestData) && $latestData->ph !== null ? ($latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'Normal' : 'Periksa') : 'Belum Ada' }}
+</span>
 </div>
 <div>
 <span class="text-sm text-forest/60 font-medium">Current pH</span>
-<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ optional($latestData)->ph ?? '7.2' }}</div>
+<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ph !== null ? number_format($latestData->ph, 1) : '-' }}</div>
 </div>
 </div>
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-sand text-2xl">grain</span>
-<span class="text-xs font-bold text-sand bg-sand/10 px-2 py-0.5 rounded-full">Alert</span>
+<span class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 25 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-full">
+{{ isset($latestData) && $latestData->ntu !== null ? ($latestData->ntu <= 25 ? 'Jernih' : 'Alert') : 'Belum Ada' }}
+</span>
 </div>
 <div>
 <span class="text-sm text-forest/60 font-medium">Turbidity</span>
-<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ optional($latestData)->ntu ?? '12' }}<span class="text-sm ml-1">NTU</span></div>
+<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ntu !== null ? number_format($latestData->ntu, 0) : '-' }}<span class="text-sm ml-1">NTU</span></div>
 </div>
 </div>
 </div>
 </div>
-<div class="bg-surface rounded-xl p-6 shadow-soft border border-mint/20 flex-grow flex flex-col">
-<div class="flex items-center justify-between mb-4">
-<h3 class="font-serif text-lg font-semibold text-forest-dark">Kontrol Pompa</h3>
-<div class="flex items-center gap-2">
-<div class="h-2 w-2 rounded-full bg-forest animate-pulse"></div>
-<span class="text-xs font-mono text-forest/60">CONNECTED</span>
-</div>
-</div>
-<div class="flex-grow flex flex-col items-center justify-center py-6">
-<label class="flex items-center cursor-pointer relative mb-4" for="pump-toggle">
-<input checked="" class="sr-only peer" id="pump-toggle" type="checkbox"/>
-<div class="w-20 h-10 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-mint/30 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-9 after:w-9 after:transition-all peer-checked:bg-forest"></div>
-<span class="ml-3 text-lg font-bold text-forest-dark peer-checked:text-forest">ON</span>
-</label>
-<p class="text-center text-forest-dark font-medium">Status: <span class="font-bold">Active</span></p>
-</div>
-<div class="mt-auto bg-terra/10 border border-terra/20 rounded-xl p-4 flex gap-3 items-start">
-<span class="material-symbols-outlined text-terra shrink-0">warning</span>
-<div>
-<p class="text-terra font-bold text-sm mb-1">Peringatan Admin</p>
-<p class="text-terra/80 text-xs leading-relaxed">
-                                Mematikan pompa secara paksa akan menghentikan aliran air ke rumah warga. Gunakan hanya saat darurat.
-                            </p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="bg-surface rounded-xl shadow-soft border border-mint/20 overflow-hidden">
-<div class="px-6 py-5 border-b border-mist flex items-center justify-between">
-<h3 class="font-serif text-xl font-semibold text-forest-dark">Riwayat Peringatan (Alert Log)</h3>
-<button class="text-sm text-forest font-bold hover:underline">View All History</button>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-mist/50 text-forest/60 text-xs uppercase tracking-wider font-semibold">
-<th class="px-6 py-4 font-medium">Waktu (Time)</th>
-<th class="px-6 py-4 font-medium">Sensor Issue</th>
-<th class="px-6 py-4 font-medium">Value Recorded</th>
-<th class="px-6 py-4 font-medium">Duration</th>
-<th class="px-6 py-4 font-medium text-right">Status</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-mist">
-<tr class="hover:bg-mist/30 transition-colors">
-<td class="px-6 py-4">
-<div class="font-mono text-sm text-forest-dark font-medium">Today, 14:20</div>
-</td>
-<td class="px-6 py-4">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-terra text-sm">water_ph</span>
-<span class="text-sm font-medium text-forest-dark">pH Spike (High)</span>
-</div>
-</td>
-<td class="px-6 py-4 font-mono text-sm text-forest-dark">8.9 pH</td>
-<td class="px-6 py-4 text-sm text-forest/70">15 mins</td>
-<td class="px-6 py-4 text-right">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-terra/10 text-terra">
-                                    Unresolved
-                                </span>
-</td>
-</tr>
-<tr class="hover:bg-mist/30 transition-colors">
-<td class="px-6 py-4">
-<div class="font-mono text-sm text-forest-dark font-medium">Yesterday, 09:12</div>
-</td>
-<td class="px-6 py-4">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-sand text-sm">grain</span>
-<span class="text-sm font-medium text-forest-dark">Turbidity Warning</span>
-</div>
-</td>
-<td class="px-6 py-4 font-mono text-sm text-forest-dark">45 NTU</td>
-<td class="px-6 py-4 text-sm text-forest/70">2 hours</td>
-<td class="px-6 py-4 text-right">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-mint/10 text-forest">
-                                    Resolved
-                                </span>
-</td>
-</tr>
-<tr class="hover:bg-mist/30 transition-colors">
-<td class="px-6 py-4">
-<div class="font-mono text-sm text-forest-dark font-medium">Oct 24, 18:30</div>
-</td>
-<td class="px-6 py-4">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-terra text-sm">power_off</span>
-<span class="text-sm font-medium text-forest-dark">Pump Failure</span>
-</div>
-</td>
-<td class="px-6 py-4 font-mono text-sm text-forest-dark">No Response</td>
-<td class="px-6 py-4 text-sm text-forest/70">45 mins</td>
-<td class="px-6 py-4 text-right">
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-mint/10 text-forest">
-                                    Resolved
-                                </span>
-</td>
-</tr>
-</tbody>
-</table>
 </div>
 </div>
 </div>
