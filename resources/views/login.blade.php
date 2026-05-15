@@ -46,6 +46,166 @@
         }
     </script>
 <script defer="" src="//unpkg.com/alpinejs"></script>
+<style>
+    .preview-website-button {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.65rem;
+        padding: 0.22rem;
+        border-radius: 9999px;
+        color: #07140f;
+        text-decoration: none;
+        perspective: 1200px;
+        transform-style: preserve-3d;
+        isolation: isolate;
+        z-index: 0;
+        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s ease;
+        will-change: transform;
+    }
+
+    .preview-website-button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        background: radial-gradient(circle at 50% 0%, rgba(19, 236, 138, 0.34), rgba(19, 236, 138, 0) 68%);
+        filter: blur(14px);
+        transform: translateY(10px) scale(0.9);
+        opacity: 0.7;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    .preview-website-button__platform {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: 9999px;
+        background: linear-gradient(160deg, rgba(13, 36, 27, 0.96) 0%, rgba(18, 54, 40, 0.96) 38%, rgba(7, 19, 14, 0.98) 100%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 32px rgba(6, 20, 14, 0.45);
+        transform: translateY(8px) translateZ(-18px);
+        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+        pointer-events: none;
+    }
+
+    .preview-website-button__face {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-height: 3.2rem;
+        padding: 0.92rem 1.15rem;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, #1ff3a4 0%, #13ec8a 45%, #11b16a 100%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 10px 24px rgba(19, 236, 138, 0.24);
+        transform: translateZ(24px) rotateX(14deg) rotateY(-16deg);
+        transform-origin: left center;
+        overflow: hidden;
+        white-space: nowrap;
+        transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+    }
+
+    .preview-website-button__face::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 42%);
+        opacity: 0.8;
+        pointer-events: none;
+    }
+
+    .preview-website-button__face::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        pointer-events: none;
+    }
+
+    .preview-website-button__icon,
+    .preview-website-button__chevron {
+        position: relative;
+        z-index: 1;
+        font-size: 1.05rem;
+        line-height: 1;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .preview-website-button__label {
+        position: relative;
+        z-index: 1;
+        max-width: 0;
+        opacity: 0;
+        overflow: hidden;
+        transform: translateX(-10px);
+        transition: max-width 0.4s ease, opacity 0.22s ease, transform 0.4s ease;
+    }
+
+    .preview-website-button:hover,
+    .preview-website-button:focus-visible {
+        transform: translateY(-3px) rotateX(10deg) rotateY(-14deg);
+    }
+
+    .preview-website-button:hover::before,
+    .preview-website-button:focus-visible::before {
+        transform: translateY(18px) scale(0.98);
+        opacity: 1;
+    }
+
+    .preview-website-button:hover .preview-website-button__platform,
+    .preview-website-button:focus-visible .preview-website-button__platform {
+        transform: translateY(14px) translateZ(-18px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 24px 40px rgba(6, 20, 14, 0.5);
+    }
+
+    .preview-website-button:hover .preview-website-button__face,
+    .preview-website-button:focus-visible .preview-website-button__face {
+        transform: translateZ(28px) rotateX(0deg) rotateY(0deg);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 18px 34px rgba(19, 236, 138, 0.28);
+    }
+
+    .preview-website-button:hover .preview-website-button__label,
+    .preview-website-button:focus-visible .preview-website-button__label {
+        max-width: 12rem;
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .preview-website-button:hover .preview-website-button__chevron,
+    .preview-website-button:focus-visible .preview-website-button__chevron {
+        transform: translateX(2px) translateY(-1px) rotate(8deg);
+        opacity: 1;
+    }
+
+    .preview-website-button:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(19, 236, 138, 0.22);
+    }
+
+    .preview-website-button:active .preview-website-button__face {
+        transform: translateZ(18px) scale(0.985);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .preview-website-button,
+        .preview-website-button::before,
+        .preview-website-button__platform,
+        .preview-website-button__face,
+        .preview-website-button__icon,
+        .preview-website-button__label,
+        .preview-website-button__chevron {
+            transition: none !important;
+        }
+
+        .preview-website-button:hover,
+        .preview-website-button:focus-visible {
+            transform: none;
+        }
+    }
+</style>
 </head>
 <body class="bg-background-light text-text-main font-display antialiased h-screen overflow-hidden selection:bg-primary selection:text-text-main">
 <div class="flex h-full w-full" x-data="{ role: '{{ old('role', 'warga') }}', id: '{{ old('identity') }}', pin: '', error: {{ $errors->any() ? 'true' : 'false' }}, errorMsg: '{{ $errors->first('loginError') ?: 'Mohon isi ID dan PIN dengan benar.' }}', submit(e) { if(!this.id || !this.pin) { e.preventDefault(); this.error = true; this.errorMsg = 'Mohon isi ID dan PIN dengan benar.'; setTimeout(() => this.error = false, 5000); } } }">
@@ -77,8 +237,26 @@
                     Pantau kualitas air lingkungan Anda secara real-time. Teknologi sederhana untuk ketenangan pikiran bersama.
                 </p>
 </div>
-<div class="relative z-10 text-sm text-gray-400">
-                &copy; {{ date('Y') }} Eco-Community Monitor
+<div class="relative z-10 flex flex-col items-start gap-4 text-sm text-gray-400">
+                <div>&copy; {{ date('Y') }} Eco-Community Monitor</div>
+                <a
+                    class="preview-website-button"
+                    href="https://krenova1.vercel.app/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    aria-label="Preview Website"
+                >
+                    <span class="preview-website-button__platform" aria-hidden="true"></span>
+                    <span class="preview-website-button__face">
+                        <span class="material-symbols-outlined preview-website-button__icon" aria-hidden="true">
+                            public
+                        </span>
+                        <span class="preview-website-button__label">Preview Website</span>
+                        <span class="material-symbols-outlined preview-website-button__chevron" aria-hidden="true">
+                            north_east
+                        </span>
+                    </span>
+                </a>
             </div>
 </div>
 <!-- Right Section: Login Form -->
@@ -87,6 +265,28 @@
 <div class="lg:hidden absolute top-6 left-6 flex items-center gap-2">
 <span class="material-symbols-outlined text-primary-dark text-3xl">water_drop</span>
 <span class="text-lg font-bold text-text-main">EcoWater</span>
+</div>
+<!-- Mobile Preview Website Button -->
+<div class="lg:hidden absolute top-4 right-6 z-50">
+    <a
+        class="preview-website-button"
+        href="https://krenova1.vercel.app/"
+        rel="noopener noreferrer"
+        target="_blank"
+        aria-label="Preview Website"
+        style="transform: scale(0.85); transform-origin: top right;"
+    >
+        <span class="preview-website-button__platform" aria-hidden="true"></span>
+        <span class="preview-website-button__face">
+            <span class="material-symbols-outlined preview-website-button__icon" aria-hidden="true">
+                public
+            </span>
+            <span class="preview-website-button__label">Preview Website</span>
+            <span class="material-symbols-outlined preview-website-button__chevron" aria-hidden="true">
+                north_east
+            </span>
+        </span>
+    </a>
 </div>
 <div class="w-full max-w-md">
 <!-- Header Text -->
