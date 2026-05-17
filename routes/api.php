@@ -120,20 +120,22 @@ Route::get('/chart-data', function (Request $request) {
     $range = $request->query('range', '24h');
     $query->whereNotNull('ph');
 
+    $timeQuery = clone $query;
+
     if ($range === '24h') {
-        $query->where('created_at', '>=', now()->subDay());
+        $timeQuery->where('created_at', '>=', now()->subDay());
     } elseif ($range === '7d') {
-        $query->where('created_at', '>=', now()->subDays(7));
+        $timeQuery->where('created_at', '>=', now()->subDays(7));
     } elseif ($range === '30d') {
-        $query->where('created_at', '>=', now()->subDays(30));
+        $timeQuery->where('created_at', '>=', now()->subDays(30));
     }
 
-    $records = $query->orderBy('created_at', 'asc')->get(['ph', 'created_at']);
+    $records = $timeQuery->orderBy('created_at', 'asc')->get(['ph', 'created_at']);
     
     // Fallback if empty
     if ($records->isEmpty()) {
         $limit = $range === '24h' ? 24 : ($range === '7d' ? 28 : 30);
-        $records = (clone $query)->latest()->take($limit)->get(['ph', 'created_at'])->reverse()->values();
+        $records = $query->latest()->take($limit)->get(['ph', 'created_at'])->reverse()->values();
     }
 
     $labels = $records->map(fn($r) => $r->created_at->format('d M H:i'));
