@@ -220,10 +220,10 @@
 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
 <div>
 <h3 class="text-xl font-bold text-text flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[24px]">table_chart</span> Riwayat Data Sensor</h3>
-<p class="text-text/50 text-sm mt-1">Data sensor terbaru, auto-refresh setiap 10 detik</p>
+<p class="text-text/50 text-sm mt-1">Data sensor terbaru, auto-refresh setiap 1 menit</p>
 </div>
 <div class="flex items-center gap-3">
-<div class="flex items-center gap-2 px-4 py-2 bg-accent-safe/10 rounded-full border border-accent-safe/20"><span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span><span class="text-xs font-bold text-primary" id="countdown-text">Update dalam 10s</span></div>
+<div class="flex items-center gap-2 px-4 py-2 bg-accent-safe/10 rounded-full border border-accent-safe/20"><span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span><span class="text-xs font-bold text-primary" id="countdown-text">Update dalam 60s</span></div>
 <button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
 </div>
 </div>
@@ -322,7 +322,7 @@
     }
 
     let previousDataIds = [];
-    let countdownValue = 10;
+    let countdownValue = 60;
 
     function formatRelayStatus(status) {
         if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-200">ON</span>';
@@ -389,7 +389,7 @@
         if (countdownValue <= 0) {
             el.innerText = 'Memperbarui...';
             loadSensorHistory();
-            countdownValue = 10;
+            countdownValue = 60;
         } else {
             el.innerText = 'Update dalam ' + countdownValue + 's';
         }
