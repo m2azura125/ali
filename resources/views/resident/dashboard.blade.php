@@ -110,11 +110,9 @@
 </div>
 </header>
 @php
-    $isKotor = false;
-    if(isset($latestData)) {
-        if($latestData->ph < 6.5 || $latestData->ph > 8.5 || $latestData->ntu > 25 || $latestData->relay_status) {
-            $isKotor = true;
-        }
+    $isKotor = true;
+    if(isset($latestData) && $latestData->relay_status) {
+        $isKotor = false;
     }
 @endphp
 <section id="status-section" class="relative w-full overflow-hidden rounded-3xl {{ $isKotor ? 'bg-red-50 border-red-200' : 'bg-accent-safe/10 border-accent-safe/20' }} shadow-soft transition-all duration-500 hover:shadow-lg group">
@@ -214,6 +212,40 @@
 </div>
 </div>
 </section>
+
+<!-- Data Sensor History Table -->
+<section class="bg-surface rounded-3xl p-8 shadow-soft border border-muted/20 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+<div class="relative z-10">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+<div>
+<h3 class="text-xl font-bold text-text flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[24px]">table_chart</span> Riwayat Data Sensor</h3>
+<p class="text-text/50 text-sm mt-1">Data sensor terbaru, auto-refresh setiap 10 detik</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 px-4 py-2 bg-accent-safe/10 rounded-full border border-accent-safe/20"><span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span><span class="text-xs font-bold text-primary" id="countdown-text">Update dalam 10s</span></div>
+<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
+</div>
+</div>
+<div class="overflow-x-auto rounded-2xl border border-muted/20">
+<table class="w-full text-left">
+<thead><tr class="bg-background/80 border-b border-muted/20">
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">#</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">pH</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">NTU</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">Suhu</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">Fuzzy</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">Relay</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">Waktu</th>
+</tr></thead>
+<tbody id="sensor-history-body">
+<tr><td colspan="7" class="px-5 py-12 text-center text-text/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-muted animate-pulse">sensors</span><span class="text-sm font-medium">Memuat data sensor...</span></div></td></tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between mt-4 text-text/40 text-xs"><span id="total-records">Menampilkan 0 data</span><span id="last-updated">Terakhir diperbarui: -</span></div>
+</div>
+</section>
 <footer class="mt-auto pt-6 flex flex-col md:flex-row justify-between items-center text-text/40 text-sm gap-4">
 <p id="refresh-timer" class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span> Sinkronisasi Real-time Aktif</p>
 <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-muted/20 shadow-sm">
@@ -241,8 +273,8 @@
                     const tempValue = data.temperature ? parseFloat(data.temperature).toFixed(0) : '0';
                     document.getElementById('temp-value').innerHTML = tempValue + '&deg;';
                     
-                    // Cek kondisi air kotor
-                    const isKotor = phValue < 6.5 || phValue > 8.5 || ntuValue > 25 || data.relay_status;
+                    // Relay ON = Air Aman, Relay OFF = Air Tidak Aman
+                    const isKotor = !data.relay_status;
                     
                     // Update status elemen UI
                     const statusSection = document.getElementById('status-section');
@@ -289,7 +321,78 @@
             .catch(error => console.error('Error fetching data:', error));
     }
 
-    // Refresh secara background setiap 3 detik
+    let previousDataIds = [];
+    let countdownValue = 10;
+
+    function formatRelayStatus(status) {
+        if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-200">ON</span>';
+        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-200">OFF</span>';
+    }
+
+    function formatTime(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return String(d.getDate()).padStart(2,'0') + ' ' + months[d.getMonth()] + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+    }
+
+    function loadSensorHistory() {
+        fetch('/api/sensor-history?username={{ urlencode($sensorUsername ?? Auth::user()->username ?? '') }}&limit=20')
+            .then(r => r.json())
+            .then(records => {
+                const tbody = document.getElementById('sensor-history-body');
+                if (!records || records.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-12 text-center text-text/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-muted">sensors_off</span><span class="text-sm font-medium">Belum ada data sensor</span></div></td></tr>';
+                    document.getElementById('total-records').innerText = 'Menampilkan 0 data';
+                    return;
+                }
+                const newIds = records.map(r => r.id);
+                let html = '';
+                records.forEach((rec, i) => {
+                    const isNew = previousDataIds.length > 0 && !previousDataIds.includes(rec.id);
+                    const phVal = rec.ph !== null ? parseFloat(rec.ph).toFixed(1) : '-';
+                    const ntuVal = rec.ntu !== null ? parseFloat(rec.ntu).toFixed(0) : '-';
+                    const tempVal = rec.temperature !== null ? parseFloat(rec.temperature).toFixed(1) + '\u00b0C' : '-';
+                    const fuzzyVal = rec.fuzzy !== null ? parseFloat(rec.fuzzy).toFixed(2) : '-';
+                    const phColor = rec.ph !== null && (rec.ph < 6.5 || rec.ph > 8.5) ? 'text-red-600 font-bold' : 'text-text';
+                    const ntuColor = rec.ntu !== null && rec.ntu > 25 ? 'text-amber-600 font-bold' : 'text-text';
+                    html += '<tr class="' + (isNew ? 'animate-[fadeHighlight_0.8s_ease-out]' : '') + ' border-b border-muted/10 hover:bg-background/50 transition-colors">';
+                    html += '<td class="px-5 py-3.5"><span class="text-xs font-mono text-text/40">' + (i+1) + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono font-bold ' + phColor + '">' + phVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono font-bold ' + ntuColor + '">' + ntuVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono font-bold text-text">' + tempVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono text-sm text-text/70">' + fuzzyVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5">' + formatRelayStatus(rec.relay_status) + '</td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono text-xs text-text/50">' + formatTime(rec.created_at) + '</span></td>';
+                    html += '</tr>';
+                });
+                tbody.innerHTML = html;
+                previousDataIds = newIds;
+                document.getElementById('total-records').innerText = 'Menampilkan ' + records.length + ' data terbaru';
+                const now = new Date();
+                document.getElementById('last-updated').innerText = 'Terakhir diperbarui: ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+            })
+            .catch(e => console.error('Error:', e));
+    }
+
+    // Initial load
+    loadSensorHistory();
+    updateData();
+
+    // Refresh sensor cards every 3 seconds
     setInterval(updateData, 3000);
+
+    // Refresh table every 10 seconds with countdown
+    setInterval(() => {
+        countdownValue--;
+        const el = document.getElementById('countdown-text');
+        if (countdownValue <= 0) {
+            el.innerText = 'Memperbarui...';
+            loadSensorHistory();
+            countdownValue = 10;
+        } else {
+            el.innerText = 'Update dalam ' + countdownValue + 's';
+        }
+    }, 1000);
 </script>
 </body></html>

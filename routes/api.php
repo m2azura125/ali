@@ -69,3 +69,30 @@ Route::get('/latest-sensor-data', function (Request $request) {
     $latestData = $query->latest()->first();
     return response()->json($latestData);
 });
+
+Route::get('/sensor-history', function (Request $request) {
+    $query = SensorData::query();
+    $limit = min((int) ($request->query('limit', 20)), 50);
+
+    if ($request->filled('user_id')) {
+        $query->where('user_id', $request->user_id);
+    } elseif ($request->filled('username')) {
+        $identity = strtolower((string) $request->username);
+        $residentId = User::query()
+            ->where('role', 'warga')
+            ->where(function ($userQuery) use ($identity) {
+                $userQuery->whereRaw('LOWER(username) = ?', [$identity])
+                    ->orWhereRaw('LOWER(name) = ?', [$identity]);
+            })
+            ->value('id');
+
+        if ($residentId) {
+            $query->where('user_id', $residentId);
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+    $records = $query->latest()->take($limit)->get();
+    return response()->json($records);
+});
