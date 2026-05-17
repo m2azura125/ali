@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet"/>
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Theme Configuration -->
 <script id="tailwind-config">
         tailwind.config = {
@@ -111,66 +112,21 @@
 <h2 class="font-serif text-2xl font-semibold text-forest-dark">Kualitas Air</h2>
 <p class="text-forest/60 text-sm mt-1">Grafik pH berdasarkan data sensor yang tersimpan</p>
 </div>
-<div class="bg-mist p-1 rounded-full flex items-center">
-@foreach ($rangeOptions as $rangeKey => $option)
-<a href="{{ url()->current() }}?range={{ $rangeKey }}" class="px-4 py-2 rounded-full text-sm transition-all {{ $range === $rangeKey ? 'bg-white text-forest-dark shadow-sm font-semibold' : 'hover:bg-white/50 text-forest/70 font-medium' }}">
-{{ $option['label'] }}
-</a>
-@endforeach
+<div class="bg-mist p-1 rounded-full flex items-center" id="chart-filters">
+<button onclick="setChartRange('24h')" id="btn-filter-24h" class="px-4 py-2 rounded-full text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold">24 Jam</button>
+<button onclick="setChartRange('7d')" id="btn-filter-7d" class="px-4 py-2 rounded-full text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">7 Hari</button>
+<button onclick="setChartRange('30d')" id="btn-filter-30d" class="px-4 py-2 rounded-full text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">30 Hari</button>
 </div>
 </div>
-<div class="relative w-full flex-grow min-h-[300px] flex items-end justify-between gap-2 pt-10 pb-2 px-2">
-<div class="absolute left-0 top-0 bottom-8 w-8 flex flex-col justify-between text-xs font-mono text-forest/40">
-@foreach ($yLabels as $label)
-<span>{{ $label }}</span>
-@endforeach
-</div>
-<div class="ml-8 w-full h-full relative">
-<div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-<div class="w-full h-px bg-mint/10 border-t border-dashed border-mint/20"></div>
-<div class="w-full h-px bg-mint/10 border-t border-dashed border-mint/20"></div>
-<div class="w-full h-px bg-mint/10 border-t border-dashed border-mint/20"></div>
-<div class="w-full h-px bg-mint/10 border-t border-dashed border-mint/20"></div>
-<div class="w-full h-px bg-mint/10 border-t border-dashed border-mint/20"></div>
-</div>
-@if ($hasChartData)
-<svg class="w-full h-full overflow-visible drop-shadow-xl" preserveaspectratio="none" viewbox="0 0 800 300">
-<defs>
-<lineargradient id="gradientFlow" x1="0" x2="0" y1="0" y2="1">
-<stop offset="0%" stop-color="#52B788" stop-opacity="0.4"></stop>
-<stop offset="100%" stop-color="#52B788" stop-opacity="0"></stop>
-</lineargradient>
-</defs>
-<path d="{{ $areaPath }}" fill="url(#gradientFlow)"></path>
-<path d="{{ $linePath }}" fill="none" stroke="#2D6A4F" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" vector-effect="non-scaling-stroke"></path>
-<circle cx="{{ $latestPoint['x'] }}" cy="{{ $latestPoint['y'] }}" fill="#FFFFFF" r="6" stroke="#2D6A4F" stroke-width="3"></circle>
-</svg>
-<div class="absolute bg-forest-dark text-white px-3 py-1.5 rounded-lg shadow-lg transform -translate-x-1/2 -translate-y-full" style="left: calc({{ ($latestPoint['x'] / 800) * 100 }}% + 2rem); top: calc({{ ($latestPoint['y'] / 300) * 100 }}% - 0.5rem);">
-<div class="font-mono text-sm font-bold">pH {{ number_format($latestPoint['ph'], 1) }}</div>
-<div class="text-[10px] text-mint/80">{{ $latestPoint['time'] }}</div>
-<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 w-2 h-2 bg-forest-dark rotate-45"></div>
-</div>
-@else
-<div class="h-full flex items-center justify-center rounded-2xl border border-dashed border-mint/30 bg-mist/40 text-center px-6">
-<div>
-<p class="text-forest-dark font-semibold">Belum ada data pH untuk ditampilkan.</p>
-<p class="text-sm text-forest/60 mt-1">Grafik akan otomatis mengikuti data sensor asli setelah data masuk ke tabel.</p>
-</div>
-</div>
-@endif
-</div>
-<div class="absolute bottom-0 left-8 right-0 flex justify-between text-xs font-mono text-forest/40 pt-2">
-@foreach ($xLabels as $label)
-<span>{{ $label }}</span>
-@endforeach
-</div>
+<div class="relative w-full flex-grow min-h-[300px] pt-4 pb-2 px-2">
+<canvas id="phChart" class="w-full h-full"></canvas>
 </div>
 </div>
 </div>
 <div class="flex flex-col gap-6">
 <div class="bg-surface rounded-xl p-6 shadow-soft border border-mint/20">
 <h3 class="font-serif text-lg font-semibold text-forest-dark mb-4">Sensor Terkini</h3>
-<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-4">
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-mint text-2xl">water_drop</span>
@@ -195,9 +151,212 @@
 <div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ntu !== null ? number_format($latestData->ntu, 0) : '-' }}<span class="text-sm ml-1">NTU</span></div>
 </div>
 </div>
+<div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
+<div class="flex items-start justify-between mb-2">
+<span class="material-symbols-outlined text-terra text-2xl">thermostat</span>
+<span class="text-xs font-bold {{ isset($latestData) && $latestData->temperature !== null ? 'text-mint bg-mint/10' : 'text-forest/60 bg-white' }} px-2 py-0.5 rounded-full">
+{{ isset($latestData) && $latestData->temperature !== null ? 'Normal' : 'Belum Ada' }}
+</span>
+</div>
+<div>
+<span class="text-sm text-forest/60 font-medium">Suhu Air</span>
+<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->temperature !== null ? number_format($latestData->temperature, 1) : '-' }}<span class="text-sm ml-1">&deg;C</span></div>
 </div>
 </div>
 </div>
 </div>
 </div>
+</div>
+
+<!-- Data Sensor History Table -->
+<section class="bg-surface rounded-xl p-6 shadow-soft border border-mint/20 relative overflow-hidden mb-8">
+<div class="absolute top-0 right-0 w-64 h-64 bg-forest/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+<div class="relative z-10">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+<div>
+<h3 class="font-serif text-xl font-bold text-forest-dark flex items-center gap-2"><span class="material-symbols-outlined text-forest text-[24px]">table_chart</span> Riwayat Data Sensor</h3>
+<p class="text-forest/60 text-sm mt-1">Data sensor terbaru, auto-refresh setiap 1 menit</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 px-4 py-2 bg-mint/10 rounded-full border border-mint/20"><span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span><span class="text-xs font-bold text-forest-dark" id="countdown-text">Update dalam 60s</span></div>
+<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-forest/10 hover:bg-forest/20 text-forest-dark rounded-full text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
+</div>
+</div>
+<div class="overflow-x-auto rounded-xl border border-mint/20">
+<table class="w-full text-left">
+<thead><tr class="bg-mist border-b border-mint/20">
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">#</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">pH</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">NTU</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Suhu</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Fuzzy</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Relay</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Waktu</th>
+</tr></thead>
+<tbody id="sensor-history-body">
+<tr><td colspan="7" class="px-5 py-12 text-center text-forest/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-mint animate-pulse">sensors</span><span class="text-sm font-medium">Memuat data sensor...</span></div></td></tr>
+</tbody>
+</table>
+</div>
+<div class="flex items-center justify-between mt-4 text-forest/50 text-xs"><span id="total-records">Menampilkan 0 data</span><span id="last-updated">Terakhir diperbarui: -</span></div>
+</div>
+</section>
+
+</div>
+
+<script>
+    let previousDataIds = [];
+    let countdownValue = 60;
+
+    function formatRelayStatus(status) {
+        if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-mint-light text-forest-dark text-xs font-bold border border-mint">ON</span>';
+        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-terra/10 text-terra text-xs font-bold border border-terra/20">OFF</span>';
+    }
+
+    function formatTime(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        return String(d.getDate()).padStart(2,'0') + ' ' + months[d.getMonth()] + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+    }
+
+    function loadSensorHistory() {
+        fetch('/api/sensor-history?username={{ urlencode($id) }}&limit=20')
+            .then(r => r.json())
+            .then(records => {
+                const tbody = document.getElementById('sensor-history-body');
+                if (!records || records.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-12 text-center text-forest/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-mint/50">sensors_off</span><span class="text-sm font-medium">Belum ada data sensor</span></div></td></tr>';
+                    document.getElementById('total-records').innerText = 'Menampilkan 0 data';
+                    return;
+                }
+                const newIds = records.map(r => r.id);
+                let html = '';
+                records.forEach((rec, i) => {
+                    const isNew = previousDataIds.length > 0 && !previousDataIds.includes(rec.id);
+                    const phVal = rec.ph !== null ? parseFloat(rec.ph).toFixed(1) : '-';
+                    const ntuVal = rec.ntu !== null ? parseFloat(rec.ntu).toFixed(0) : '-';
+                    const tempVal = rec.temperature !== null ? parseFloat(rec.temperature).toFixed(1) + '\u00b0C' : '-';
+                    const fuzzyVal = rec.fuzzy !== null ? parseFloat(rec.fuzzy).toFixed(2) : '-';
+                    const phColor = rec.ph !== null && (rec.ph < 6.5 || rec.ph > 8.5) ? 'text-terra font-bold' : 'text-forest-dark';
+                    const ntuColor = rec.ntu !== null && rec.ntu > 25 ? 'text-sand font-bold' : 'text-forest-dark';
+                    html += '<tr class="' + (isNew ? 'animate-[fadeHighlight_0.8s_ease-out]' : '') + ' border-b border-mint/10 hover:bg-mist/80 transition-colors">';
+                    html += '<td class="px-5 py-3.5"><span class="text-xs font-mono text-forest/40">' + (i+1) + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono font-bold ' + phColor + '">' + phVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono font-bold ' + ntuColor + '">' + ntuVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono font-bold text-forest-dark">' + tempVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono text-sm text-forest/70">' + fuzzyVal + '</span></td>';
+                    html += '<td class="px-5 py-3.5">' + formatRelayStatus(rec.relay_status) + '</td>';
+                    html += '<td class="px-5 py-3.5"><span class="font-mono text-xs text-forest/50">' + formatTime(rec.created_at) + '</span></td>';
+                    html += '</tr>';
+                });
+                tbody.innerHTML = html;
+                previousDataIds = newIds;
+                document.getElementById('total-records').innerText = 'Menampilkan ' + records.length + ' data terbaru';
+                const now = new Date();
+                document.getElementById('last-updated').innerText = 'Terakhir diperbarui: ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+            })
+            .catch(e => console.error('Error:', e));
+    }
+
+    // Initial load
+    loadSensorHistory();
+
+    // Refresh table every 10 seconds with countdown
+    setInterval(() => {
+        countdownValue--;
+        const el = document.getElementById('countdown-text');
+        if (countdownValue <= 0) {
+            el.innerText = 'Memperbarui...';
+            loadSensorHistory();
+            countdownValue = 60;
+        } else {
+            el.innerText = 'Update dalam ' + countdownValue + 's';
+        }
+    }, 1000);
+
+    // Chart.js Logic
+    let phChart = null;
+    let currentRange = '24h';
+    const chartCtx = document.getElementById('phChart').getContext('2d');
+
+    function initChart() {
+        phChart = new Chart(chartCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'pH Level',
+                    data: [],
+                    borderColor: '#2D6A4F',
+                    backgroundColor: 'rgba(82, 183, 136, 0.2)',
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    pointBackgroundColor: '#FFFFFF',
+                    pointBorderColor: '#2D6A4F',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 14,
+                        grid: { color: 'rgba(82, 183, 136, 0.1)', drawBorder: false }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { maxTicksLimit: 8 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1B4332',
+                        titleFont: { family: 'Space Mono', size: 11 },
+                        bodyFont: { family: 'Space Mono', size: 13, weight: 'bold' },
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) { return 'pH ' + context.parsed.y; }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function loadChartData(range = currentRange) {
+        currentRange = range;
+        
+        // Update filter buttons styling
+        const ranges = ['24h', '7d', '30d'];
+        ranges.forEach(r => {
+            const btn = document.getElementById('btn-filter-' + r);
+            if (r === range) {
+                btn.className = 'px-4 py-2 rounded-full text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold';
+            } else {
+                btn.className = 'px-4 py-2 rounded-full text-sm transition-all hover:bg-white/50 text-forest/70 font-medium';
+            }
+        });
+
+        fetch(`/api/chart-data?username={{ urlencode($id) }}&range=${range}`)
+            .then(res => res.json())
+            .then(data => {
+                phChart.data.labels = data.labels;
+                phChart.data.datasets[0].data = data.data;
+                phChart.update();
+            })
+            .catch(err => console.error('Error fetching chart data:', err));
+    }
+
+    function setChartRange(range) {
+        loadChartData(range);
+    }
+
+    initChart();
+    loadChartData();
+</script>
 </body></html>

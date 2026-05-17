@@ -96,3 +96,51 @@ Route::get('/sensor-history', function (Request $request) {
     $records = $query->latest()->take($limit)->get();
     return response()->json($records);
 });
+
+Route::get('/chart-data', function (Request $request) {
+    $query = SensorData::query();
+    
+    if ($request->filled('username')) {
+        $identity = strtolower((string) $request->username);
+        $residentId = User::query()
+            ->where('role', 'warga')
+            ->where(function ($userQuery) use ($identity) {
+                $userQuery->whereRaw('LOWER(username) = ?', [$identity])
+                    ->orWhereRaw('LOWER(name) = ?', [$identity]);
+            })
+            ->value('id');
+
+        if ($residentId) {
+            $query->where('user_id', $residentId);
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+    $range = $request->query('range', '24h');
+    $query->whereNotNull('ph');
+
+    if ($range === '24h') {
+        $query->where('created_at', '>=', now()->subDay());
+    } elseif ($range === '7d') {
+        $query->where('created_at', '>=', now()->subDays(7));
+    } elseif ($range === '30d') {
+        $query->where('created_at', '>=', now()->subDays(30));
+    }
+
+    $records = $query->orderBy('created_at', 'asc')->get(['ph', 'created_at']);
+    
+    // Fallback if empty
+    if ($records->isEmpty()) {
+        $limit = $range === '24h' ? 24 : ($range === '7d' ? 28 : 30);
+        $records = (clone $query)->latest()->take($limit)->get(['ph', 'created_at'])->reverse()->values();
+    }
+
+    $labels = $records->map(fn($r) => $r->created_at->format('d M H:i'));
+    $data = $records->map(fn($r) => round((float) $r->ph, 2));
+
+    return response()->json([
+        'labels' => $labels,
+        'data' => $data
+    ]);
+});
