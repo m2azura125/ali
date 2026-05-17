@@ -109,8 +109,8 @@
 <div class="bg-surface rounded-xl p-6 md:p-8 shadow-soft border border-mint/20 h-full flex flex-col">
 <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
 <div>
-<h2 class="font-serif text-2xl font-semibold text-forest-dark">Kualitas Air</h2>
-<p class="text-forest/60 text-sm mt-1">Grafik pH berdasarkan data sensor yang tersimpan</p>
+<h2 class="font-serif text-2xl font-semibold text-forest-dark">Grafik Sensor</h2>
+<p class="text-forest/60 text-sm mt-1">Grafik pH, Kekeruhan, dan Suhu berdasarkan data tersimpan</p>
 </div>
 <div class="bg-mist p-1 rounded-full flex items-center" id="chart-filters">
 <button onclick="setChartRange('24h')" id="btn-filter-24h" class="px-4 py-2 rounded-full text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold">24 Jam</button>
@@ -118,8 +118,10 @@
 <button onclick="setChartRange('30d')" id="btn-filter-30d" class="px-4 py-2 rounded-full text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">30 Hari</button>
 </div>
 </div>
-<div class="relative w-full flex-grow min-h-[300px] pt-4 pb-2 px-2">
-<canvas id="phChart" class="w-full h-full"></canvas>
+<div class="w-full flex-grow flex flex-col gap-6 pt-4 pb-2 px-2">
+<div class="w-full h-48 relative"><canvas id="phChart"></canvas></div>
+<div class="w-full h-48 relative"><canvas id="ntuChart"></canvas></div>
+<div class="w-full h-48 relative"><canvas id="tempChart"></canvas></div>
 </div>
 </div>
 </div>
@@ -277,23 +279,24 @@
 
     // Chart.js Logic
     let phChart = null;
+    let ntuChart = null;
+    let tempChart = null;
     let currentRange = '24h';
-    const chartCtx = document.getElementById('phChart').getContext('2d');
 
-    function initChart() {
-        phChart = new Chart(chartCtx, {
+    function createChartConfig(label, color, bgColor, tooltipSuffix, yMax = null) {
+        return {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'pH Level',
+                    label: label,
                     data: [],
-                    borderColor: '#2D6A4F',
-                    backgroundColor: 'rgba(82, 183, 136, 0.2)',
+                    borderColor: color,
+                    backgroundColor: bgColor,
                     borderWidth: 2,
                     pointRadius: 2,
                     pointBackgroundColor: '#FFFFFF',
-                    pointBorderColor: '#2D6A4F',
+                    pointBorderColor: color,
                     fill: true,
                     tension: 0.3
                 }]
@@ -304,8 +307,8 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: 14,
-                        grid: { color: 'rgba(82, 183, 136, 0.1)', drawBorder: false }
+                        max: yMax,
+                        grid: { color: bgColor, drawBorder: false }
                     },
                     x: {
                         grid: { display: false, drawBorder: false },
@@ -320,12 +323,18 @@
                         bodyFont: { family: 'Space Mono', size: 13, weight: 'bold' },
                         displayColors: false,
                         callbacks: {
-                            label: function(context) { return 'pH ' + context.parsed.y; }
+                            label: function(context) { return context.parsed.y + ' ' + tooltipSuffix; }
                         }
                     }
                 }
             }
-        });
+        };
+    }
+
+    function initChart() {
+        phChart = new Chart(document.getElementById('phChart').getContext('2d'), createChartConfig('pH Level', '#2D6A4F', 'rgba(45, 106, 79, 0.1)', 'pH', 14));
+        ntuChart = new Chart(document.getElementById('ntuChart').getContext('2d'), createChartConfig('Turbidity', '#E9C46A', 'rgba(233, 196, 106, 0.1)', 'NTU'));
+        tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), createChartConfig('Temperature', '#E76F51', 'rgba(231, 111, 81, 0.1)', '°C'));
     }
 
     function loadChartData(range = currentRange) {
@@ -346,8 +355,16 @@
             .then(res => res.json())
             .then(data => {
                 phChart.data.labels = data.labels;
-                phChart.data.datasets[0].data = data.data;
+                phChart.data.datasets[0].data = data.ph_data;
                 phChart.update();
+                
+                ntuChart.data.labels = data.labels;
+                ntuChart.data.datasets[0].data = data.ntu_data;
+                ntuChart.update();
+                
+                tempChart.data.labels = data.labels;
+                tempChart.data.datasets[0].data = data.temp_data;
+                tempChart.update();
             })
             .catch(err => console.error('Error fetching chart data:', err));
     }
