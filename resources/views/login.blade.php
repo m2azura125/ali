@@ -226,7 +226,7 @@
 <div class="relative z-10">
 <div class="flex items-center gap-2 mb-8">
 <span class="material-symbols-outlined text-primary text-4xl">water_drop</span>
-<span class="text-xl font-bold tracking-tight text-primary">EcoWater</span>
+<span class="text-xl font-bold tracking-tight text-primary">Danumaya</span>
 </div>
 </div>
 <div class="relative z-10 max-w-lg">
@@ -239,7 +239,7 @@
                 </p>
 </div>
 <div class="relative z-10 flex flex-col items-start gap-4 text-sm text-gray-400">
-                <div>&copy; {{ date('Y') }} Eco-Community Monitor</div>
+                <div>&copy; {{ date('Y') }} Krenova Danumaya Politeknik Negeri Balikpapan</div>
                 <a
                     class="preview-website-button"
                     href="https://krenova1.vercel.app/"
@@ -265,7 +265,7 @@
 <!-- Mobile Header (Visible only on small screens) -->
 <div class="lg:hidden absolute top-6 left-6 flex items-center gap-2">
 <span class="material-symbols-outlined text-primary-dark text-3xl">water_drop</span>
-<span class="text-lg font-bold text-text-main">EcoWater</span>
+<span class="text-lg font-bold text-text-main">Danumaya</span>
 </div>
 <!-- Mobile Preview Website Button -->
 <div class="lg:hidden absolute top-4 right-6 z-50">
