@@ -25,8 +25,11 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/admin', function () {
-        $latestData = SensorData::latest()->first();
-        return view('admin.dashboard', compact('latestData'));
+        $residents = User::where('role', 'warga')->get();
+        foreach ($residents as $resident) {
+            $resident->latestData = SensorData::where('user_id', $resident->id)->latest()->first();
+        }
+        return view('admin.dashboard', compact('residents'));
     });
 
     Route::get('/admin/house/{id}', function (Request $request, $id) {

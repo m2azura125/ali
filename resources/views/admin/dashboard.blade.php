@@ -130,15 +130,39 @@
 </div>
 </div>
 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-<a href="/admin/house/Krisna" class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-transparent bg-white p-6 md:p-8 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/20">
+@foreach($residents as $resident)
+@php
+    $block = match($resident->username) {
+        'krisna' => 'Blok K-01',
+        'siti' => 'Blok A-05',
+        'rahman' => 'Blok B-02',
+        default => 'Blok ' . strtoupper($resident->username)
+    };
+    $latest = $resident->latestData;
+    $hasData = !is_null($latest);
+    
+    // Check if status is normal
+    // Normal: pH between 6.5 and 8.5 AND NTU <= 25 AND Temperature between 10 and 37
+    $isNormal = true;
+    if ($hasData) {
+        if ($latest->ph < 6.5 || $latest->ph > 8.5 || $latest->ntu > 25 || $latest->temperature > 37 || $latest->temperature < 10) {
+            $isNormal = false;
+        }
+    }
+@endphp
+<a href="/admin/house/{{ $resident->username }}" class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-transparent bg-white p-6 md:p-8 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/20">
 <div class="absolute right-0 top-0 h-32 w-32 translate-x-8 -translate-y-8 rounded-full bg-[#d97706]/10 blur-3xl"></div>
 <div class="mb-4 flex items-start justify-between relative z-10">
 <div class="flex flex-col">
-<span class="font-mono text-xs font-bold uppercase tracking-widest text-[#d97706]">Blok K-01</span>
-<h3 class="mt-1 font-serif text-2xl font-bold text-primary-dark">Krisna</h3>
+<span class="font-mono text-xs font-bold uppercase tracking-widest text-[#d97706]">{{ $block }}</span>
+<h3 class="mt-1 font-serif text-2xl font-bold text-primary-dark">{{ $resident->name }}</h3>
 </div>
-<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#d97706]/10 text-[#d97706] ring-4 ring-white shadow-sm">
-<span class="material-symbols-outlined">check_circle</span>
+<div @class([
+    'flex h-12 w-12 items-center justify-center rounded-xl ring-4 ring-white shadow-sm',
+    'bg-green-50 text-green-500' => $isNormal,
+    'bg-red-50 text-red-500 pulse-danger' => !$isNormal
+])>
+<span class="material-symbols-outlined">{{ $isNormal ? 'check_circle' : 'warning' }}</span>
 </div>
 </div>
 <div class="flex flex-col gap-4 flex-1 mt-2 relative z-10">
@@ -147,21 +171,30 @@
 <span class="material-symbols-outlined text-[18px]">thermostat</span>
 <span class="text-sm font-bold">Status Suhu Air</span>
 </div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">{{ optional($latestData)->temperature ?? '27.5' }} °C</span>
+<span @class([
+    'px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark',
+    'bg-red-50 text-red-600' => $hasData && ($latest->temperature > 37 || $latest->temperature < 10)
+])>{{ $hasData ? $latest->temperature . ' °C' : 'Normal' }}</span>
 </div>
 <div class="flex justify-between items-center border-b border-primary/5 pb-3">
 <div class="flex items-center gap-2 text-primary/60 border-b border-transparent">
 <span class="material-symbols-outlined text-[18px]">science</span>
 <span class="text-sm font-bold">Status PH Air</span>
 </div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">{{ optional($latestData)->ph ?? '7.2' }} pH</span>
+<span @class([
+    'px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark',
+    'bg-red-50 text-red-600' => $hasData && ($latest->ph < 6.5 || $latest->ph > 8.5)
+])>{{ $hasData ? $latest->ph . ' pH' : 'Normal' }}</span>
 </div>
 <div class="flex justify-between items-center">
 <div class="flex items-center gap-2 text-primary/60 border-b border-transparent">
 <span class="material-symbols-outlined text-[18px]">blur_on</span>
 <span class="text-sm font-bold">Status Kekeruhan</span>
 </div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">{{ optional($latestData)->ntu ?? '5.0' }} NTU</span>
+<span @class([
+    'px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark',
+    'bg-red-50 text-red-600' => $hasData && $latest->ntu > 25
+])>{{ $hasData ? $latest->ntu . ' NTU' : 'Jernih' }}</span>
 </div>
 </div>
 <div class="mt-6 pt-2 relative z-10">
@@ -171,88 +204,7 @@
 </button>
 </div>
 </a>
-<a href="/admin/house/A05" class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-transparent bg-white p-6 md:p-8 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/20">
-<div class="absolute right-0 top-0 h-32 w-32 translate-x-8 -translate-y-8 rounded-full bg-[#d97706]/10 blur-3xl"></div>
-<div class="mb-4 flex items-start justify-between relative z-10">
-<div class="flex flex-col">
-<span class="font-mono text-xs font-bold uppercase tracking-widest text-[#d97706]">Blok A-05</span>
-<h3 class="mt-1 font-serif text-2xl font-bold text-primary-dark">Bu Siti</h3>
-</div>
-<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#d97706]/10 text-[#d97706] ring-4 ring-white shadow-sm">
-<span class="material-symbols-outlined">check_circle</span>
-</div>
-</div>
-<div class="flex flex-col gap-4 flex-1 mt-2 relative z-10">
-<div class="flex justify-between items-center border-b border-primary/5 pb-3">
-<div class="flex items-center gap-2 text-primary/60">
-<span class="material-symbols-outlined text-[18px]">thermostat</span>
-<span class="text-sm font-bold">Status Suhu Air</span>
-</div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">Normal</span>
-</div>
-<div class="flex justify-between items-center border-b border-primary/5 pb-3">
-<div class="flex items-center gap-2 text-primary/60 border-b border-transparent">
-<span class="material-symbols-outlined text-[18px]">science</span>
-<span class="text-sm font-bold">Status PH Air</span>
-</div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">Normal</span>
-</div>
-<div class="flex justify-between items-center">
-<div class="flex items-center gap-2 text-primary/60 border-b border-transparent">
-<span class="material-symbols-outlined text-[18px]">blur_on</span>
-<span class="text-sm font-bold">Status Kekeruhan</span>
-</div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">Jernih</span>
-</div>
-</div>
-<div class="mt-6 pt-2 relative z-10">
-<button class="w-full flex items-center justify-center gap-2 rounded-lg bg-surface-muted py-3.5 text-sm font-bold text-primary-dark transition-colors group-hover:bg-[#d97706]/20">
-<span>Detail Warga</span>
-<span class="material-symbols-outlined text-[18px] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">arrow_forward</span>
-</button>
-</div>
-</a>
-<a href="/admin/house/B02" class="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-transparent bg-white p-6 md:p-8 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-primary/20">
-<div class="absolute right-0 top-0 h-32 w-32 translate-x-8 -translate-y-8 rounded-full bg-[#d97706]/10 blur-3xl"></div>
-<div class="mb-4 flex items-start justify-between relative z-10">
-<div class="flex flex-col">
-<span class="font-mono text-xs font-bold uppercase tracking-widest text-[#d97706]">Blok B-02</span>
-<h3 class="mt-1 font-serif text-2xl font-bold text-primary-dark">Pak Rahman</h3>
-</div>
-<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#d97706]/10 text-[#d97706] ring-4 ring-white shadow-sm">
-<span class="material-symbols-outlined">check_circle</span>
-</div>
-</div>
-<div class="flex flex-col gap-4 flex-1 mt-2 relative z-10">
-<div class="flex justify-between items-center border-b border-primary/5 pb-3">
-<div class="flex items-center gap-2 text-primary/60">
-<span class="material-symbols-outlined text-[18px]">thermostat</span>
-<span class="text-sm font-bold">Status Suhu Air</span>
-</div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">Normal</span>
-</div>
-<div class="flex justify-between items-center border-b border-primary/5 pb-3">
-<div class="flex items-center gap-2 text-primary/60 border-b border-transparent">
-<span class="material-symbols-outlined text-[18px]">science</span>
-<span class="text-sm font-bold">Status PH Air</span>
-</div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">Normal</span>
-</div>
-<div class="flex justify-between items-center">
-<div class="flex items-center gap-2 text-primary/60 border-b border-transparent">
-<span class="material-symbols-outlined text-[18px]">blur_on</span>
-<span class="text-sm font-bold">Status Kekeruhan</span>
-</div>
-<span class="px-3 py-1 rounded-lg text-xs font-bold bg-primary/10 text-primary-dark">Jernih</span>
-</div>
-</div>
-<div class="mt-6 pt-2 relative z-10">
-<button class="w-full flex items-center justify-center gap-2 rounded-lg bg-surface-muted py-3.5 text-sm font-bold text-primary-dark transition-colors group-hover:bg-[#d97706]/20">
-<span>Detail Warga</span>
-<span class="material-symbols-outlined text-[18px] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">arrow_forward</span>
-</button>
-</div>
-</a>
+@endforeach
 </div>
 </div>
 </div>

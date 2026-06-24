@@ -94,49 +94,57 @@ class SensorDataSeeder extends Seeder
 
     public function run(): void
     {
-        // Get user Krisna (user_id = 1)
-        $user = User::where('username', 'krisna')->first();
-        if (!$user) {
-            return;
-        }
-
         // Clean existing sensor data first
         SensorData::truncate();
 
-        // Generate 120 data points over the last 5 days
+        // Get all warga users
+        $wargas = User::where('role', 'warga')->get();
         $now = Carbon::now();
-        
-        for ($i = 120; $i >= 0; $i--) {
-            $timestamp = (clone $now)->subMinutes($i * 60); // spaced hourly
 
-            // 1. Simulate Temperature: 22°C to 36°C (peaks around 32°C normal range)
-            $temperature = 31.0 + (sin($i / 8) * 4.5) + (rand(-10, 10) / 10);
+        foreach ($wargas as $user) {
+            // Generate 120 data points over the last 5 days
+            for ($i = 120; $i >= 0; $i--) {
+                $timestamp = (clone $now)->subMinutes($i * 60); // spaced hourly
 
-            // 2. Simulate pH: fluctuates between 4.5 and 9.5
-            $ph = 7.2 + (cos($i / 12) * 2.0) + (rand(-20, 20) / 100);
-            if ($ph < 0) $ph = 0;
-            if ($ph > 14) $ph = 14;
+                if ($user->username === 'krisna') {
+                    // Profile 1 (Krisna): Mid-range fluctuation
+                    $temperature = 31.0 + (sin($i / 8) * 4.5) + (rand(-10, 10) / 10);
+                    $ph = 7.2 + (cos($i / 12) * 2.0) + (rand(-20, 20) / 100);
+                    $ntu = 2.2 + (sin($i / 15) * 2.2) + (rand(-10, 10) / 10);
+                } elseif ($user->username === 'siti') {
+                    // Profile 2 (Bu Siti): Super clean, normal, highly stable
+                    $temperature = 26.5 + (sin($i / 10) * 1.5) + (rand(-5, 5) / 10);
+                    $ph = 7.4 + (cos($i / 18) * 0.4) + (rand(-10, 10) / 100);
+                    $ntu = 0.5 + (sin($i / 20) * 0.3) + (rand(-2, 2) / 10);
+                } else {
+                    // Profile 3 (Pak Rahman): Warmer, basic, higher turbidity (turbid water)
+                    $temperature = 33.0 + (cos($i / 6) * 2.0) + (rand(-8, 8) / 10);
+                    $ph = 8.1 + (sin($i / 10) * 0.8) + (rand(-15, 15) / 100);
+                    $ntu = 12.5 + (cos($i / 8) * 10.0) + (rand(-15, 15) / 10);
+                }
 
-            // 3. Simulate Turbidity (NTU): fluctuates between 0 and 15
-            $ntu = 2.2 + (sin($i / 15) * 2.2) + (rand(-10, 10) / 10);
-            if ($ntu < 0) $ntu = 0;
+                // Constrain values to logical bounds
+                if ($ph < 0) $ph = 0;
+                if ($ph > 14) $ph = 14;
+                if ($ntu < 0) $ntu = 0;
 
-            // Calculate fuzzy output using the exact ESP32 rules
-            $fuzzyOut = $this->fuzzySugeno($temperature, $ph, $ntu);
+                // Calculate fuzzy output using the exact ESP32 rules
+                $fuzzyOut = $this->fuzzySugeno($temperature, $ph, $ntu);
 
-            // Relay Status: ON if fuzzy output >= 0.5
-            $relay_status = ($fuzzyOut >= 0.5);
+                // Relay Status: ON if fuzzy output >= 0.5
+                $relay_status = ($fuzzyOut >= 0.5);
 
-            SensorData::create([
-                'user_id' => $user->id,
-                'ph' => round($ph, 2),
-                'ntu' => round($ntu, 1),
-                'temperature' => round($temperature, 1),
-                'fuzzy' => round($fuzzyOut, 2),
-                'relay_status' => $relay_status,
-                'created_at' => $timestamp,
-                'updated_at' => $timestamp,
-            ]);
+                SensorData::create([
+                    'user_id' => $user->id,
+                    'ph' => round($ph, 2),
+                    'ntu' => round($ntu, 1),
+                    'temperature' => round($temperature, 1),
+                    'fuzzy' => round($fuzzyOut, 2),
+                    'relay_status' => $relay_status,
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ]);
+            }
         }
     }
 }

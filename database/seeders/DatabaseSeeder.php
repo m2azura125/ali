@@ -13,11 +13,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User Warga
+        // User Warga 1
         User::updateOrCreate(
             ['username' => 'krisna'],
             [
                 'name' => 'Krisna',
+                'role' => 'warga',
+                'password' => Hash::make('12321'),
+            ]
+        );
+
+        // User Warga 2
+        User::updateOrCreate(
+            ['username' => 'siti'],
+            [
+                'name' => 'Bu Siti',
+                'role' => 'warga',
+                'password' => Hash::make('12321'),
+            ]
+        );
+
+        // User Warga 3
+        User::updateOrCreate(
+            ['username' => 'rahman'],
+            [
+                'name' => 'Pak Rahman',
                 'role' => 'warga',
                 'password' => Hash::make('12321'),
             ]
