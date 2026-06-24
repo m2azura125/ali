@@ -14,19 +14,27 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User Warga
-        User::create([
-            'name' => 'Krisna',
-            'username' => 'krisna',
-            'role' => 'warga',
-            'password' => Hash::make('12321'),
-        ]);
+        User::updateOrCreate(
+            ['username' => 'krisna'],
+            [
+                'name' => 'Krisna',
+                'role' => 'warga',
+                'password' => Hash::make('12321'),
+            ]
+        );
 
         // User Admin
-        User::create([
-            'name' => 'admin',
-            'username' => 'admin',
-            'role' => 'rt',
-            'password' => Hash::make('12321'),
+        User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'admin',
+                'role' => 'rt',
+                'password' => Hash::make('12321'),
+            ]
+        );
+
+        $this->call([
+            SensorDataSeeder::class,
         ]);
     }
 }
