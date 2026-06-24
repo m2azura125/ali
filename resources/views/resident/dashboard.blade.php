@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>EcoWater - Resident Dashboard</title>
+<title>MonitoringLomba - Warga</title>
 <link rel="icon" type="image/png" href="/logo.png">
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -23,26 +23,29 @@
                         mono: ['Space Mono', 'monospace'],
                     },
                     colors: {
-                        primary: "#2D6A4F",
-                        "primary-hover": "#1B4332",
-                        background: "#F4F7F5",
+                        primary: "#92400e",
+                        "primary-hover": "#78350f",
+                        background: "#fffbeb",
                         surface: "#FFFFFF",
-                        text: "#1B4332",
-                        muted: "#95D5B2",
+                        text: "#78350f",
+                        muted: "#fcd34d",
                         accent: {
-                            safe: "#52B788",
+                            safe: "#d97706",
                             warning: "#E9C46A",
                             danger: "#E76F51",
                         },
                     },
                     borderRadius: {
-                        'xl': '1rem',
-                        '2xl': '1.5rem',
-                        '3xl': '2rem',
+                        'sm': '0.25rem',
+                        'md': '0.375rem',
+                        'lg': '0.5rem',
+                        'xl': '0.75rem',
+                        '2xl': '1rem',
+                        '3xl': '1.25rem',
                         'pill': '9999px',
                     },
                     boxShadow: {
-                        'soft': '0 20px 40px -10px rgba(45, 106, 79, 0.08)',
+                        'soft': '0 20px 40px -10px rgba(146, 64, 14, 0.08)',
                         'inner-soft': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
                     },
                     backgroundImage: {
@@ -60,7 +63,7 @@
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background-color: #95D5B2;
+            background-color: #fcd34d;
             border-radius: 20px;
             border: 3px solid transparent;
             background-clip: content-box;
@@ -89,21 +92,21 @@
 </div>
 </div>
 <div class="flex flex-col md:items-end gap-3 w-full md:w-auto mt-4 md:mt-0">
-<div class="flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur-md rounded-2xl shadow-sm border border-white/50">
+<div class="flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur-md rounded-xl shadow-sm border border-white/50">
 <div class="w-10 h-10 rounded-full overflow-hidden bg-amber-100 flex items-center justify-center border-2 border-white shadow-sm shrink-0">
 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ Auth::user()->name ?? 'Bapak Budi' }}&backgroundColor=ffdfbf" alt="avatar" class="w-full h-full object-cover">
 </div>
 <div class="flex flex-col">
-<span class="text-base font-bold text-[#1B4332]">{{ Auth::user()->name ?? 'Bapak Budi' }}</span>
-<span class="text-xs font-medium text-[#52B788]">Warga (A-12)</span>
+<span class="text-base font-bold text-[#78350f]">{{ Auth::user()->name ?? 'Bapak Budi' }}</span>
+<span class="text-xs font-medium text-[#d97706]">Warga (A-12)</span>
 </div>
-<a href="{{ route('logout') }}" aria-label="Keluar" class="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+<a href="{{ route('logout') }}" aria-label="Keluar" class="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
 <span class="material-symbols-outlined text-[18px]">logout</span>
 </a>
 </div>
 
 <div class="flex justify-end w-full md:w-auto">
-<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-muted/20">
+<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm border border-muted/20">
 <span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span>
 <span class="text-sm font-medium text-text/80">Sistem Online</span>
 </div>
@@ -116,16 +119,16 @@
         $isKotor = false;
     }
 @endphp
-<section id="status-section" class="relative w-full overflow-hidden rounded-3xl {{ $isKotor ? 'bg-red-50 border-red-200' : 'bg-accent-safe/10 border-accent-safe/20' }} shadow-soft transition-all duration-500 hover:shadow-lg group">
+<section id="status-section" class="relative w-full overflow-hidden rounded-xl {{ $isKotor ? 'bg-red-50 border-red-200' : 'bg-accent-safe/10 border-accent-safe/20' }} shadow-soft transition-all duration-500 hover:shadow-lg group">
 <div id="blur-bg-1" class="absolute top-0 right-0 w-64 h-64 {{ $isKotor ? 'bg-red-200' : 'bg-accent-safe/20' }} rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 <div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2"></div>
 <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between p-8 md:p-12 gap-8">
 <div class="flex flex-col gap-4 max-w-xl">
 <div class="flex items-center gap-3 mb-2">
-<span id="status-icon-container" class="flex items-center justify-center w-12 h-12 rounded-full {{ $isKotor ? 'bg-red-500 shadow-red-500/40' : 'bg-accent-safe shadow-accent-safe/40' }} text-white shadow-lg">
+<span id="status-icon-container" class="flex items-center justify-center w-12 h-12 rounded-xl {{ $isKotor ? 'bg-red-500 shadow-red-500/40' : 'bg-accent-safe shadow-accent-safe/40' }} text-white shadow-lg">
 <span id="status-icon" class="material-symbols-outlined text-[28px]">{{ $isKotor ? 'warning' : 'verified_user' }}</span>
 </span>
-<span id="status-badge" class="px-4 py-1.5 rounded-full {{ $isKotor ? 'bg-red-100 text-red-700' : 'bg-accent-safe/20 text-primary' }} text-sm font-bold tracking-wide uppercase">{{ $isKotor ? 'Status Tidak Normal' : 'Status Normal' }}</span>
+<span id="status-badge" class="px-4 py-1.5 rounded-lg {{ $isKotor ? 'bg-red-100 text-red-700' : 'bg-accent-safe/20 text-primary' }} text-sm font-bold tracking-wide uppercase">{{ $isKotor ? 'Status Tidak Normal' : 'Status Normal' }}</span>
 </div>
 <h2 id="status-text" class="text-3xl md:text-4xl font-bold {{ $isKotor ? 'text-red-700' : 'text-text' }} leading-tight">
                             {{ $isKotor ? 'Air Tidak Aman Digunakan' : 'Air Aman Digunakan' }}
@@ -135,24 +138,24 @@
                         </p>
 </div>
 <div class="flex flex-col items-center lg:items-end gap-3 w-full lg:w-auto mt-4 lg:mt-0">
-<div class="glass-panel p-6 rounded-[2rem] border border-white/50 shadow-sm flex flex-col items-center gap-4 min-w-[200px]">
+<div class="glass-panel p-6 rounded-xl border border-white/50 shadow-sm flex flex-col items-center gap-4 min-w-[200px]">
 <span class="text-sm font-bold text-text/60 uppercase tracking-wider text-center">Filtrasi Berhasil</span>
-<div class="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 shadow-inner border border-green-200">
+<div class="flex h-16 w-16 items-center justify-center rounded-xl bg-green-100 shadow-inner border border-green-200">
 <span class="material-symbols-outlined text-[36px] text-green-600">lightbulb</span>
 </div>
-<span id="relay-status" class="text-xs font-mono font-bold {{ isset($latestData) && $latestData->relay_status ? 'text-green-700 bg-green-100 border-green-200' : 'text-red-700 bg-red-100 border-red-200' }} px-3 py-1 rounded-full border">RELAY: {{ isset($latestData) && $latestData->relay_status ? 'MENYALA' : 'MATI' }}</span>
+<span id="relay-status" class="text-xs font-mono font-bold {{ isset($latestData) && $latestData->relay_status ? 'text-green-700 bg-green-100 border-green-200' : 'text-red-700 bg-red-100 border-red-200' }} px-3 py-1 rounded-lg border">RELAY: {{ isset($latestData) && $latestData->relay_status ? 'MENYALA' : 'MATI' }}</span>
 </div>
 </div>
 </div>
 </section>
 <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-<div class="bg-surface rounded-3xl p-8 shadow-soft border border-muted/20 hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between h-64 group relative overflow-hidden">
+<div class="bg-surface rounded-xl p-8 shadow-soft border border-muted/20 hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between h-64 group relative overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-100 transition-colors"></div>
 <div class="flex justify-between items-start relative z-10">
-<div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+<div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
 <span class="material-symbols-outlined">science</span>
 </div>
-<span class="text-sm font-medium text-text/40 bg-background px-3 py-1 rounded-full">Real-time</span>
+<span class="text-sm font-medium text-text/40 bg-background px-3 py-1 rounded-lg">Real-time</span>
 </div>
 <div class="relative z-10">
 <span class="text-sm font-bold text-text/50 uppercase tracking-wider">Tingkat pH</span>
@@ -168,13 +171,13 @@
 </div>
 </div>
 </div>
-<div class="bg-surface rounded-3xl p-8 shadow-soft border border-muted/20 hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between h-64 group relative overflow-hidden">
+<div class="bg-surface rounded-xl p-8 shadow-soft border border-muted/20 hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between h-64 group relative overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2 group-hover:bg-amber-100 transition-colors"></div>
 <div class="flex justify-between items-start relative z-10">
-<div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
+<div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
 <span class="material-symbols-outlined">grain</span>
 </div>
-<span class="text-sm font-medium text-text/40 bg-background px-3 py-1 rounded-full">Real-time</span>
+<span class="text-sm font-medium text-text/40 bg-background px-3 py-1 rounded-lg">Real-time</span>
 </div>
 <div class="relative z-10">
 <span class="text-sm font-bold text-text/50 uppercase tracking-wider">Kekeruhan</span>
@@ -190,13 +193,13 @@
 </div>
 </div>
 </div>
-<div class="bg-surface rounded-3xl p-8 shadow-soft border border-muted/20 hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between h-64 group relative overflow-hidden">
+<div class="bg-surface rounded-xl p-8 shadow-soft border border-muted/20 hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between h-64 group relative overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-full blur-[40px] -translate-y-1/2 translate-x-1/2 group-hover:bg-rose-100 transition-colors"></div>
 <div class="flex justify-between items-start relative z-10">
-<div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+<div class="w-12 h-12 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
 <span class="material-symbols-outlined">thermostat</span>
 </div>
-<span class="text-sm font-medium text-text/40 bg-background px-3 py-1 rounded-full">Real-time</span>
+<span class="text-sm font-medium text-text/40 bg-background px-3 py-1 rounded-lg">Real-time</span>
 </div>
 <div class="relative z-10">
 <span class="text-sm font-bold text-text/50 uppercase tracking-wider">Suhu Air</span>
@@ -215,7 +218,7 @@
 </section>
 
 <!-- Data Sensor History Table -->
-<section class="bg-surface rounded-3xl p-8 shadow-soft border border-muted/20 relative overflow-hidden">
+<section class="bg-surface rounded-xl p-8 shadow-soft border border-muted/20 relative overflow-hidden">
 <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 <div class="relative z-10">
 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
@@ -224,11 +227,11 @@
 <p class="text-text/50 text-sm mt-1">Data sensor terbaru, auto-refresh setiap 1 menit</p>
 </div>
 <div class="flex items-center gap-3">
-<div class="flex items-center gap-2 px-4 py-2 bg-accent-safe/10 rounded-full border border-accent-safe/20"><span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span><span class="text-xs font-bold text-primary" id="countdown-text">Update dalam 60s</span></div>
-<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
+<div class="flex items-center gap-2 px-4 py-2 bg-accent-safe/10 rounded-lg border border-accent-safe/20"><span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span><span class="text-xs font-bold text-primary" id="countdown-text">Update dalam 60s</span></div>
+<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
 </div>
 </div>
-<div class="overflow-x-auto rounded-2xl border border-muted/20">
+<div class="overflow-x-auto rounded-lg border border-muted/20">
 <table class="w-full text-left">
 <thead><tr class="bg-background/80 border-b border-muted/20">
 <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-text/50">#</th>
@@ -249,7 +252,7 @@
 </section>
 <footer class="mt-auto pt-6 flex flex-col md:flex-row justify-between items-center text-text/40 text-sm gap-4">
 <p id="refresh-timer" class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-accent-safe animate-pulse"></span> Sinkronisasi Real-time Aktif</p>
-<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-muted/20 shadow-sm">
+<div class="flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-muted/20 shadow-sm">
 <span class="material-symbols-outlined text-[16px]">info</span>
 <span>Tips: Matikan pompa jika pH &gt; 8.5</span>
 </div>
@@ -287,20 +290,20 @@
                     const blurBg1 = document.getElementById('blur-bg-1');
                     
                     if (isKotor) {
-                        statusSection.className = 'relative w-full overflow-hidden rounded-3xl bg-red-50 border border-red-200 shadow-soft transition-all duration-500 hover:shadow-lg group';
-                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-red-500 text-white shadow-lg shadow-red-500/40';
+                        statusSection.className = 'relative w-full overflow-hidden rounded-xl bg-red-50 border border-red-200 shadow-soft transition-all duration-500 hover:shadow-lg group';
+                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-red-500 text-white shadow-lg shadow-red-500/40';
                         statusIcon.innerText = 'warning';
-                        statusBadge.className = 'px-4 py-1.5 rounded-full bg-red-100 text-red-700 text-sm font-bold tracking-wide uppercase';
+                        statusBadge.className = 'px-4 py-1.5 rounded-lg bg-red-100 text-red-700 text-sm font-bold tracking-wide uppercase';
                         statusBadge.innerText = 'Status Tidak Normal';
                         statusText.innerText = 'Air Tidak Aman Digunakan';
                         statusText.className = 'text-3xl md:text-4xl font-bold text-red-700 leading-tight';
                         statusDesc.innerText = 'Kualitas air tidak memenuhi standar (air kotor). Sedang dalam proses filtrasi atau pembuangan.';
                         if (blurBg1) blurBg1.className = 'absolute top-0 right-0 w-64 h-64 bg-red-200 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2';
                     } else {
-                        statusSection.className = 'relative w-full overflow-hidden rounded-3xl bg-accent-safe/10 border border-accent-safe/20 shadow-soft transition-all duration-500 hover:shadow-lg group';
-                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-full bg-accent-safe text-white shadow-lg shadow-accent-safe/40';
+                        statusSection.className = 'relative w-full overflow-hidden rounded-xl bg-accent-safe/10 border border-accent-safe/20 shadow-soft transition-all duration-500 hover:shadow-lg group';
+                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-accent-safe text-white shadow-lg shadow-accent-safe/40';
                         statusIcon.innerText = 'verified_user';
-                        statusBadge.className = 'px-4 py-1.5 rounded-full bg-accent-safe/20 text-primary text-sm font-bold tracking-wide uppercase';
+                        statusBadge.className = 'px-4 py-1.5 rounded-lg bg-accent-safe/20 text-primary text-sm font-bold tracking-wide uppercase';
                         statusBadge.innerText = 'Status Normal';
                         statusText.innerText = 'Air Aman Digunakan';
                         statusText.className = 'text-3xl md:text-4xl font-bold text-text leading-tight';
@@ -312,10 +315,10 @@
                     const relayEl = document.getElementById('relay-status');
                     if (data.relay_status) {
                         relayEl.innerText = 'RELAY: MENYALA';
-                        relayEl.className = 'text-xs font-mono font-bold text-green-700 bg-green-100 border-green-200 px-3 py-1 rounded-full border';
+                        relayEl.className = 'text-xs font-mono font-bold text-green-700 bg-green-100 border-green-200 px-3 py-1 rounded-lg border';
                     } else {
                         relayEl.innerText = 'RELAY: MATI';
-                        relayEl.className = 'text-xs font-mono font-bold text-red-700 bg-red-100 border-red-200 px-3 py-1 rounded-full border';
+                        relayEl.className = 'text-xs font-mono font-bold text-red-700 bg-red-100 border-red-200 px-3 py-1 rounded-lg border';
                     }
                 }
             })
@@ -326,8 +329,8 @@
     let countdownValue = 60;
 
     function formatRelayStatus(status) {
-        if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-200">ON</span>';
-        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-200">OFF</span>';
+        if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-green-50 text-green-700 text-xs font-bold border border-green-200">ON</span>';
+        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 text-red-600 text-xs font-bold border border-red-200">OFF</span>';
     }
 
     function formatTime(dateStr) {
@@ -397,3 +400,4 @@
     }, 1000);
 </script>
 </body></html>
+

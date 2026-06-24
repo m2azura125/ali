@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>House Detail View - Eco-Community Water Monitor</title>
+<title>MonitoringLomba - Detail</title>
 <link rel="icon" type="image/png" href="/logo.png">
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -19,14 +19,14 @@
             theme: {
                 extend: {
                     colors: {
-                        "forest": "#2D6A4F",
-                        "forest-dark": "#1B4332",
-                        "forest-light": "#40916C",
-                        "mint": "#52B788",
-                        "mint-light": "#D8F3DC",
+                        "forest": "#92400e",
+                        "forest-dark": "#78350f",
+                        "forest-light": "#b45309",
+                        "mint": "#d97706",
+                        "mint-light": "#fef3c7",
                         "sand": "#E9C46A",
                         "terra": "#E76F51",
-                        "mist": "#F4F7F5",
+                        "mist": "#fffbeb",
                         "surface": "#FFFFFF",
                     },
                     fontFamily: {
@@ -35,12 +35,12 @@
                         "mono": ["Space Mono", "monospace"],
                     },
                     borderRadius: {
-                        "lg": "1.5rem", // 24px
-                        "xl": "2rem", // 32px
-                        "2xl": "2.5rem",
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem",
                     },
                     boxShadow: {
-                        "soft": "0 20px 25px -5px rgb(45 106 79 / 0.05), 0 8px 10px -6px rgb(45 106 79 / 0.05)",
+                        "soft": "0 20px 25px -5px rgb(146 64 14 / 0.05), 0 8px 10px -6px rgb(146 64 14 / 0.05)",
                     }
                 },
             },
@@ -60,16 +60,16 @@
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #95D5B2; 
+            background: #fcd34d; 
         }
 
         /* Toggle Switch Animation */
         .toggle-checkbox:checked {
             right: 0;
-            border-color: #2D6A4F;
+            border-color: #92400e;
         }
         .toggle-checkbox:checked + .toggle-label {
-            background-color: #2D6A4F;
+            background-color: #92400e;
         }
         
         /* Subtle noise texture */
@@ -83,23 +83,23 @@
 <div class="relative z-10 flex flex-col min-h-screen max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
 <header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
 <div class="flex items-center gap-4">
-<a href="/admin" aria-label="Go back" class="flex items-center justify-center w-12 h-12 rounded-full bg-white hover:bg-mint-light text-forest transition-colors shadow-soft group">
+<a href="/admin" aria-label="Go back" class="flex items-center justify-center w-12 h-12 rounded-lg bg-white hover:bg-mint-light text-forest transition-colors shadow-soft group">
 <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
 </a>
 <div>
 <div class="flex items-center gap-3">
-<span class="px-3 py-1 rounded-full bg-forest text-white text-xs font-bold tracking-wider uppercase">Admin View</span>
+<span class="px-3 py-1 rounded-lg bg-forest text-white text-xs font-bold tracking-wider uppercase">Admin View</span>
 <span class="flex h-2 w-2 rounded-full bg-mint animate-pulse"></span>
 </div>
 <h1 class="font-serif text-3xl md:text-4xl font-bold text-forest-dark mt-1">Detail Warga: {{ $selectedResident->name ?? $id }}</h1>
 </div>
 </div>
 <div class="flex items-center gap-3">
-<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-mint-light hover:bg-mint/30 text-forest-dark font-semibold transition-colors">
+<button class="flex items-center gap-2 px-6 py-3 rounded-lg bg-mint-light hover:bg-mint/30 text-forest-dark font-semibold transition-colors">
 <span class="material-symbols-outlined text-[20px]">history</span>
 <span>Logs</span>
 </button>
-<button class="flex items-center gap-2 px-6 py-3 rounded-full bg-forest hover:bg-forest-light text-white font-bold shadow-lg shadow-forest/20 transition-all hover:scale-105">
+<button class="flex items-center gap-2 px-6 py-3 rounded-lg bg-forest hover:bg-forest-light text-white font-bold shadow-lg shadow-forest/20 transition-all hover:scale-105">
 <span class="material-symbols-outlined text-[20px]">call</span>
 <span>Call Resident</span>
 </button>
@@ -113,10 +113,10 @@
 <h2 class="font-serif text-2xl font-semibold text-forest-dark">Grafik Sensor</h2>
 <p class="text-forest/60 text-sm mt-1">Grafik pH, Kekeruhan, dan Suhu berdasarkan data tersimpan</p>
 </div>
-<div class="bg-mist p-1 rounded-full flex items-center" id="chart-filters">
-<button onclick="setChartRange('24h')" id="btn-filter-24h" class="px-4 py-2 rounded-full text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold">24 Jam</button>
-<button onclick="setChartRange('7d')" id="btn-filter-7d" class="px-4 py-2 rounded-full text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">7 Hari</button>
-<button onclick="setChartRange('30d')" id="btn-filter-30d" class="px-4 py-2 rounded-full text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">30 Hari</button>
+<div class="bg-mist p-1 rounded-lg flex items-center" id="chart-filters">
+<button onclick="setChartRange('24h')" id="btn-filter-24h" class="px-4 py-2 rounded-lg text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold">24 Jam</button>
+<button onclick="setChartRange('7d')" id="btn-filter-7d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">7 Hari</button>
+<button onclick="setChartRange('30d')" id="btn-filter-30d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">30 Hari</button>
 </div>
 </div>
 <div class="w-full flex-grow flex flex-col gap-6 pt-4 pb-2 px-2">
@@ -132,8 +132,8 @@
 <div class="flex flex-col gap-4">
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
-<span class="material-symbols-outlined text-mint text-2xl">water_drop</span>
-<span class="text-xs font-bold {{ isset($latestData) && $latestData->ph !== null && $latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ph !== null ? 'text-terra bg-terra/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-mint text-2xl">emoji_events</span>
+<span class="text-xs font-bold {{ isset($latestData) && $latestData->ph !== null && $latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ph !== null ? 'text-terra bg-terra/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
 {{ isset($latestData) && $latestData->ph !== null ? ($latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'Normal' : 'Periksa') : 'Belum Ada' }}
 </span>
 </div>
@@ -145,7 +145,7 @@
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-sand text-2xl">grain</span>
-<span class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 25 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-full">
+<span class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 25 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
 {{ isset($latestData) && $latestData->ntu !== null ? ($latestData->ntu <= 25 ? 'Jernih' : 'Alert') : 'Belum Ada' }}
 </span>
 </div>
@@ -157,7 +157,7 @@
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-terra text-2xl">thermostat</span>
-<span class="text-xs font-bold {{ isset($latestData) && $latestData->temperature !== null ? 'text-mint bg-mint/10' : 'text-forest/60 bg-white' }} px-2 py-0.5 rounded-full">
+<span class="text-xs font-bold {{ isset($latestData) && $latestData->temperature !== null ? 'text-mint bg-mint/10' : 'text-forest/60 bg-white' }} px-2 py-0.5 rounded-lg">
 {{ isset($latestData) && $latestData->temperature !== null ? 'Normal' : 'Belum Ada' }}
 </span>
 </div>
@@ -181,8 +181,8 @@
 <p class="text-forest/60 text-sm mt-1">Data sensor terbaru, auto-refresh setiap 1 menit</p>
 </div>
 <div class="flex items-center gap-3">
-<div class="flex items-center gap-2 px-4 py-2 bg-mint/10 rounded-full border border-mint/20"><span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span><span class="text-xs font-bold text-forest-dark" id="countdown-text">Update dalam 60s</span></div>
-<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-forest/10 hover:bg-forest/20 text-forest-dark rounded-full text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
+<div class="flex items-center gap-2 px-4 py-2 bg-mint/10 rounded-lg border border-mint/20"><span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span><span class="text-xs font-bold text-forest-dark" id="countdown-text">Update dalam 60s</span></div>
+<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-forest/10 hover:bg-forest/20 text-forest-dark rounded-lg text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
 </div>
 </div>
 <div class="overflow-x-auto rounded-xl border border-mint/20">
@@ -212,8 +212,8 @@
     let countdownValue = 60;
 
     function formatRelayStatus(status) {
-        if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-mint-light text-forest-dark text-xs font-bold border border-mint">ON</span>';
-        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-terra/10 text-terra text-xs font-bold border border-terra/20">OFF</span>';
+        if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-mint-light text-forest-dark text-xs font-bold border border-mint">ON</span>';
+        return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-terra/10 text-terra text-xs font-bold border border-terra/20">OFF</span>';
     }
 
     function formatTime(dateStr) {
@@ -319,7 +319,7 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: '#1B4332',
+                        backgroundColor: '#78350f',
                         titleFont: { family: 'Space Mono', size: 11 },
                         bodyFont: { family: 'Space Mono', size: 13, weight: 'bold' },
                         displayColors: false,
@@ -333,7 +333,7 @@
     }
 
     function initChart() {
-        phChart = new Chart(document.getElementById('phChart').getContext('2d'), createChartConfig('pH Level', '#2D6A4F', 'rgba(45, 106, 79, 0.1)', 'pH', 14));
+        phChart = new Chart(document.getElementById('phChart').getContext('2d'), createChartConfig('pH Level', '#92400e', 'rgba(146, 64, 14, 0.1)', 'pH', 14));
         ntuChart = new Chart(document.getElementById('ntuChart').getContext('2d'), createChartConfig('Turbidity', '#E9C46A', 'rgba(233, 196, 106, 0.1)', 'NTU'));
         tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), createChartConfig('Temperature', '#E76F51', 'rgba(231, 111, 81, 0.1)', '°C'));
     }
@@ -346,9 +346,9 @@
         ranges.forEach(r => {
             const btn = document.getElementById('btn-filter-' + r);
             if (r === range) {
-                btn.className = 'px-4 py-2 rounded-full text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold';
+                btn.className = 'px-4 py-2 rounded-lg text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold';
             } else {
-                btn.className = 'px-4 py-2 rounded-full text-sm transition-all hover:bg-white/50 text-forest/70 font-medium';
+                btn.className = 'px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium';
             }
         });
 
@@ -378,3 +378,5 @@
     loadChartData();
 </script>
 </body></html>
+
+
