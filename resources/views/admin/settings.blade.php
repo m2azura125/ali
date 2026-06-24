@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Eco-Monitoring Lomba Monitor - Settings</title>
+<title>Smart Water Filtration System - Settings</title>
 <link rel="icon" type="image/png" href="/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet"/>
@@ -38,8 +38,8 @@
 <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
 </a>
 <div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">emoji_events</span>
-<span class="font-serif font-bold text-primary-dark">MonitoringLomba</span>
+<span class="material-symbols-outlined text-primary">water_drop</span>
+<span class="font-serif font-bold text-primary-dark">Smart Water Filtration System</span>
 </div>
 </div>
 <nav class="hidden md:flex items-center gap-8 mx-auto absolute left-1/2 -translate-x-1/2">

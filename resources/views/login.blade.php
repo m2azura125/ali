@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MonitoringLomba - Login</title>
+<title>Smart Water Filtration System - Login</title>
 <link rel="icon" type="image/png" href="/logo.png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
@@ -221,9 +221,9 @@
         <!-- Logo and Header -->
         <div class="flex flex-col items-center mb-8">
             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary-dark shadow-sm mb-4">
-                <span class="material-symbols-outlined text-[32px]">emoji_events</span>
+                <span class="material-symbols-outlined text-[32px]">water_drop</span>
             </div>
-            <h1 class="text-2xl font-bold text-text-main tracking-tight">MonitoringLomba</h1>
+            <h1 class="text-2xl font-bold text-text-main tracking-tight">Smart Water Filtration System</h1>
             <p class="text-text-muted text-sm mt-1">Masuk untuk memantau lingkungan</p>
         </div>
 

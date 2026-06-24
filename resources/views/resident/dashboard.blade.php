@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MonitoringLomba - Warga</title>
+<title>Smart Water Filtration System - Warga</title>
 <link rel="icon" type="image/png" href="/logo.png">
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>

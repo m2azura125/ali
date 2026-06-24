@@ -2,7 +2,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MonitoringLomba Admin Dashboard</title>
+<title>Smart Water Filtration System - Admin</title>
 <link rel="icon" type="image/png" href="/logo.png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Space+Mono:wght@400;700&amp;family=Fraunces:opsz,wght@9..144,300;400;600;700&amp;display=swap" rel="stylesheet"/>
@@ -75,10 +75,10 @@
 <header class="flex items-center justify-between border-b border-primary/10 bg-white/50 px-6 py-4 backdrop-blur-md z-10 sticky top-0 md:px-10">
 <div class="flex items-center gap-4">
 <div class="flex items-center gap-2 text-primary-dark">
-<span class="material-symbols-outlined text-primary text-3xl">emoji_events</span>
+<span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
 <div class="flex flex-col">
-<span class="font-serif font-bold text-lg leading-[1.1]">MonitoringLomba</span>
-<span class="text-[10px] font-bold text-primary/60 tracking-wider">Monitoring Lomba</span>
+<span class="font-serif font-bold text-lg leading-[1.1]">Smart Water Filtration</span>
+<span class="text-[10px] font-bold text-primary/60 tracking-wider">System</span>
 </div>
 </div>
 </div>
