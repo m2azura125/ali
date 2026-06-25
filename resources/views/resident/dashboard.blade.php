@@ -189,7 +189,7 @@
 <div class="relative z-10 pt-4 border-t border-dashed border-gray-100">
 <div class="flex items-center gap-2">
 <span class="w-2 h-2 rounded-full bg-accent-safe"></span>
-<span class="text-sm font-medium text-text/70">Jernih (&lt; 25 NTU)</span>
+<span class="text-sm font-medium text-text/70">Jernih (&lt; 5 NTU)</span>
 </div>
 </div>
 </div>
