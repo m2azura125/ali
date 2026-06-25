@@ -137,23 +137,25 @@ Route::get('/chart-data', function (Request $request) {
         $timeQuery->where('created_at', '>=', now()->subDays(30));
     }
 
-    $records = $timeQuery->orderBy('created_at', 'asc')->get(['ph', 'ntu', 'temperature', 'created_at']);
+    $records = $timeQuery->orderBy('created_at', 'asc')->get(['ph', 'ntu', 'temperature', 'relay_status', 'created_at']);
     
     // Fallback if empty
     if ($records->isEmpty()) {
         $limit = $range === '24h' ? 24 : ($range === '7d' ? 28 : 30);
-        $records = $query->latest()->take($limit)->get(['ph', 'ntu', 'temperature', 'created_at'])->reverse()->values();
+        $records = $query->latest()->take($limit)->get(['ph', 'ntu', 'temperature', 'relay_status', 'created_at'])->reverse()->values();
     }
 
     $labels = $records->map(fn($r) => $r->created_at->format('d M H:i'));
     $phData = $records->map(fn($r) => round((float) $r->ph, 2));
     $ntuData = $records->map(fn($r) => round((float) $r->ntu, 2));
     $tempData = $records->map(fn($r) => round((float) $r->temperature, 2));
+    $relayData = $records->map(fn($r) => (int) $r->relay_status);
 
     return response()->json([
         'labels' => $labels,
         'ph_data' => $phData,
         'ntu_data' => $ntuData,
-        'temp_data' => $tempData
+        'temp_data' => $tempData,
+        'relay_data' => $relayData
     ]);
 });

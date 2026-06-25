@@ -123,6 +123,14 @@
 <div class="w-full h-48 relative"><canvas id="phChart"></canvas></div>
 <div class="w-full h-48 relative"><canvas id="ntuChart"></canvas></div>
 <div class="w-full h-48 relative"><canvas id="tempChart"></canvas></div>
+<div class="w-full h-48 relative">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-forest text-[20px]">electric_bolt</span>
+<span class="text-sm font-semibold text-forest-dark">Siklus Relay (ON/OFF)</span>
+<span id="relay-status-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold">-</span>
+</div>
+<canvas id="relayChart"></canvas>
+</div>
 </div>
 </div>
 </div>
@@ -133,37 +141,49 @@
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-mint text-2xl">emoji_events</span>
-<span class="text-xs font-bold {{ isset($latestData) && $latestData->ph !== null && $latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ph !== null ? 'text-terra bg-terra/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
+<span id="card-ph-status" class="text-xs font-bold {{ isset($latestData) && $latestData->ph !== null && $latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ph !== null ? 'text-terra bg-terra/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
 {{ isset($latestData) && $latestData->ph !== null ? ($latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'Normal' : 'Periksa') : 'Belum Ada' }}
 </span>
 </div>
 <div>
 <span class="text-sm text-forest/60 font-medium">Current pH</span>
-<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ph !== null ? number_format($latestData->ph, 1) : '-' }}</div>
+<div id="card-ph-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ph !== null ? number_format($latestData->ph, 1) : '-' }}</div>
 </div>
 </div>
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-sand text-2xl">grain</span>
-<span class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 25 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
+<span id="card-ntu-status" class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 25 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
 {{ isset($latestData) && $latestData->ntu !== null ? ($latestData->ntu <= 25 ? 'Jernih' : 'Alert') : 'Belum Ada' }}
 </span>
 </div>
 <div>
 <span class="text-sm text-forest/60 font-medium">Turbidity</span>
-<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ntu !== null ? number_format($latestData->ntu, 0) : '-' }}<span class="text-sm ml-1">NTU</span></div>
+<div id="card-ntu-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ntu !== null ? number_format($latestData->ntu, 0) : '-' }}<span class="text-sm ml-1">NTU</span></div>
 </div>
 </div>
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-terra text-2xl">thermostat</span>
-<span class="text-xs font-bold {{ isset($latestData) && $latestData->temperature !== null ? 'text-mint bg-mint/10' : 'text-forest/60 bg-white' }} px-2 py-0.5 rounded-lg">
+<span id="card-temp-status" class="text-xs font-bold {{ isset($latestData) && $latestData->temperature !== null ? 'text-mint bg-mint/10' : 'text-forest/60 bg-white' }} px-2 py-0.5 rounded-lg">
 {{ isset($latestData) && $latestData->temperature !== null ? 'Normal' : 'Belum Ada' }}
 </span>
 </div>
 <div>
 <span class="text-sm text-forest/60 font-medium">Suhu Air</span>
-<div class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->temperature !== null ? number_format($latestData->temperature, 1) : '-' }}<span class="text-sm ml-1">&deg;C</span></div>
+<div id="card-temp-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->temperature !== null ? number_format($latestData->temperature, 1) : '-' }}<span class="text-sm ml-1">&deg;C</span></div>
+</div>
+</div>
+<div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
+<div class="flex items-start justify-between mb-2">
+<span class="material-symbols-outlined text-forest text-2xl">electric_bolt</span>
+<span id="card-relay-status" class="text-xs font-bold {{ isset($latestData) && $latestData->relay_status ? 'text-mint bg-mint/10' : 'text-terra bg-terra/10' }} px-2 py-0.5 rounded-lg">
+{{ isset($latestData) && $latestData->relay_status ? 'Aktif' : 'Mati' }}
+</span>
+</div>
+<div>
+<span class="text-sm text-forest/60 font-medium">Keadaan Relay</span>
+<div id="card-relay-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->relay_status ? 'ON' : 'OFF' }}</div>
 </div>
 </div>
 </div>
@@ -255,6 +275,85 @@
                 });
                 tbody.innerHTML = html;
                 previousDataIds = newIds;
+
+                // Update "Sensor Terkini" cards dynamically from the latest record
+                const latest = records[0];
+                if (latest) {
+                    // pH Card
+                    const cardPhVal = document.getElementById('card-ph-val');
+                    const cardPhStatus = document.getElementById('card-ph-status');
+                    if (cardPhVal && cardPhStatus) {
+                        const ph = latest.ph !== null ? parseFloat(latest.ph) : null;
+                        if (ph !== null) {
+                            cardPhVal.innerHTML = ph.toFixed(1);
+                            if (ph >= 6.5 && ph <= 8.5) {
+                                cardPhStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
+                                cardPhStatus.innerText = 'Normal';
+                            } else {
+                                cardPhStatus.className = 'text-xs font-bold text-terra bg-terra/10 px-2 py-0.5 rounded-lg';
+                                cardPhStatus.innerText = 'Periksa';
+                            }
+                        } else {
+                            cardPhVal.innerHTML = '-';
+                            cardPhStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
+                            cardPhStatus.innerText = 'Belum Ada';
+                        }
+                    }
+
+                    // Turbidity Card
+                    const cardNtuVal = document.getElementById('card-ntu-val');
+                    const cardNtuStatus = document.getElementById('card-ntu-status');
+                    if (cardNtuVal && cardNtuStatus) {
+                        const ntu = latest.ntu !== null ? parseFloat(latest.ntu) : null;
+                        if (ntu !== null) {
+                            cardNtuVal.innerHTML = ntu.toFixed(0) + '<span class="text-sm ml-1">NTU</span>';
+                            if (ntu <= 25) {
+                                cardNtuStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
+                                cardNtuStatus.innerText = 'Jernih';
+                            } else {
+                                cardNtuStatus.className = 'text-xs font-bold text-sand bg-sand/10 px-2 py-0.5 rounded-lg';
+                                cardNtuStatus.innerText = 'Alert';
+                            }
+                        } else {
+                            cardNtuVal.innerHTML = '-';
+                            cardNtuStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
+                            cardNtuStatus.innerText = 'Belum Ada';
+                        }
+                    }
+
+                    // Temperature Card
+                    const cardTempVal = document.getElementById('card-temp-val');
+                    const cardTempStatus = document.getElementById('card-temp-status');
+                    if (cardTempVal && cardTempStatus) {
+                        const temp = latest.temperature !== null ? parseFloat(latest.temperature) : null;
+                        if (temp !== null) {
+                            cardTempVal.innerHTML = temp.toFixed(1) + '<span class="text-sm ml-1">&deg;C</span>';
+                            cardTempStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
+                            cardTempStatus.innerText = 'Normal';
+                        } else {
+                            cardTempVal.innerHTML = '-';
+                            cardTempStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
+                            cardTempStatus.innerText = 'Belum Ada';
+                        }
+                    }
+
+                    // Relay Card
+                    const cardRelayVal = document.getElementById('card-relay-val');
+                    const cardRelayStatus = document.getElementById('card-relay-status');
+                    if (cardRelayVal && cardRelayStatus) {
+                        const status = latest.relay_status;
+                        if (status) {
+                            cardRelayVal.innerText = 'ON';
+                            cardRelayStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
+                            cardRelayStatus.innerText = 'Aktif';
+                        } else {
+                            cardRelayVal.innerText = 'OFF';
+                            cardRelayStatus.className = 'text-xs font-bold text-terra bg-terra/10 px-2 py-0.5 rounded-lg';
+                            cardRelayStatus.innerText = 'Mati';
+                        }
+                    }
+                }
+
                 document.getElementById('total-records').innerText = 'Menampilkan ' + records.length + ' data terbaru';
                 const now = new Date();
                 document.getElementById('last-updated').innerText = 'Terakhir diperbarui: ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
@@ -282,6 +381,7 @@
     let phChart = null;
     let ntuChart = null;
     let tempChart = null;
+    let relayChart = null;
     let currentRange = '24h';
 
     function createChartConfig(label, color, bgColor, tooltipSuffix, yMax = null) {
@@ -336,6 +436,79 @@
         phChart = new Chart(document.getElementById('phChart').getContext('2d'), createChartConfig('pH Level', '#92400e', 'rgba(146, 64, 14, 0.1)', 'pH', 14));
         ntuChart = new Chart(document.getElementById('ntuChart').getContext('2d'), createChartConfig('Turbidity', '#E9C46A', 'rgba(233, 196, 106, 0.1)', 'NTU'));
         tempChart = new Chart(document.getElementById('tempChart').getContext('2d'), createChartConfig('Temperature', '#E76F51', 'rgba(231, 111, 81, 0.1)', '°C'));
+
+        // Relay Cycle Chart (Step Chart ON/OFF)
+        relayChart = new Chart(document.getElementById('relayChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Relay Status',
+                    data: [],
+                    borderColor: '#92400e',
+                    backgroundColor: 'rgba(146, 64, 14, 0.08)',
+                    borderWidth: 2.5,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#FFFFFF',
+                    pointHoverBorderColor: '#92400e',
+                    pointHoverBorderWidth: 3,
+                    fill: true,
+                    stepped: 'before',
+                    segment: {
+                        borderColor: function(ctx) {
+                            return ctx.p1.parsed.y === 1 ? '#16a34a' : '#dc2626';
+                        },
+                        backgroundColor: function(ctx) {
+                            return ctx.p1.parsed.y === 1 ? 'rgba(22, 163, 74, 0.08)' : 'rgba(220, 38, 38, 0.04)';
+                        }
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: -0.1,
+                        max: 1.1,
+                        grid: { color: 'rgba(146, 64, 14, 0.06)', drawBorder: false },
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                if (value === 0) return 'OFF';
+                                if (value === 1) return 'ON';
+                                return '';
+                            },
+                            font: { family: 'Space Mono', size: 11, weight: 'bold' },
+                            color: function(context) {
+                                if (context.tick.value === 1) return '#16a34a';
+                                if (context.tick.value === 0) return '#dc2626';
+                                return 'transparent';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { maxTicksLimit: 8 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#78350f',
+                        titleFont: { family: 'Space Mono', size: 11 },
+                        bodyFont: { family: 'Space Mono', size: 13, weight: 'bold' },
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y === 1 ? '🟢 ON (Aktif)' : '🔴 OFF (Mati)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     function loadChartData(range = currentRange) {
@@ -366,6 +539,29 @@
                 tempChart.data.labels = data.labels;
                 tempChart.data.datasets[0].data = data.temp_data;
                 tempChart.update();
+
+                // Update Relay Cycle Chart
+                if (data.relay_data) {
+                    relayChart.data.labels = data.labels;
+                    relayChart.data.datasets[0].data = data.relay_data;
+                    relayChart.update();
+
+                    // Update relay status badge
+                    const badge = document.getElementById('relay-status-badge');
+                    if (data.relay_data.length > 0) {
+                        const lastStatus = data.relay_data[data.relay_data.length - 1];
+                        const onCount = data.relay_data.filter(v => v === 1).length;
+                        const totalCount = data.relay_data.length;
+                        const onPercent = Math.round((onCount / totalCount) * 100);
+                        if (lastStatus === 1) {
+                            badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold text-green-700 bg-green-100 border border-green-200';
+                            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> ON — Aktif ' + onPercent + '% waktu';
+                        } else {
+                            badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold text-red-600 bg-red-50 border border-red-200';
+                            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> OFF — Aktif ' + onPercent + '% waktu';
+                        }
+                    }
+                }
             })
             .catch(err => console.error('Error fetching chart data:', err));
     }
