@@ -261,7 +261,9 @@
     let currentRange = '24h';
 
     function getWaterQuality(ph, ntu, tds) {
-        if (ph === null || ntu === null) return { status: 'N/A', class: 'text-gray-500 bg-gray-50 border-gray-100', desc: 'No data' };
+        if (ph === null || ntu === null || ph === undefined || ntu === undefined || isNaN(parseFloat(ph)) || isNaN(parseFloat(ntu))) {
+            return { status: 'N/A', class: 'text-gray-500 bg-gray-50 border-gray-100', desc: 'Belum ada data sensor.' };
+        }
         
         const phVal = parseFloat(ph);
         const ntuVal = parseFloat(ntu);
@@ -309,32 +311,50 @@
         fetch(`${apiBase}/latest-sensor-data?username=${encodeURIComponent(currentUsername)}`)
             .then(r => r.json())
             .then(data => {
+                let ph = '0.0';
+                let tds = '0';
+                let ntu = '0';
+                
                 if (data) {
-                    const ph = data.ph !== null ? parseFloat(data.ph).toFixed(1) : '-';
-                    const ntu = data.ntu !== null ? parseFloat(data.ntu).toFixed(0) : '-';
-                    // TDS is temperature * 7
-                    const tds = data.temperature !== null ? Math.round(parseFloat(data.temperature) * 7) : '-';
+                    const parsedPh = parseFloat(data.ph);
+                    if (!isNaN(parsedPh)) ph = parsedPh.toFixed(1);
                     
-                    document.getElementById('ph-val').innerText = ph;
-                    document.getElementById('tds-val').innerText = tds;
-                    document.getElementById('turbidity-val').innerText = ntu;
+                    const parsedNtu = parseFloat(data.ntu);
+                    if (!isNaN(parsedNtu)) ntu = parsedNtu.toFixed(0);
                     
-                    const q = getWaterQuality(data.ph, data.ntu, tds);
-                    const qualityValEl = document.getElementById('quality-val');
-                    qualityValEl.innerText = q.status;
-                    
-                    // Style Quality card border-l
-                    const qualityCard = document.getElementById('quality-card');
-                    if (qualityCard) {
-                        qualityCard.className = `md:col-span-1 bg-white p-6 rounded-xl shadow-soft border-l-4 ${
-                            q.status === 'GOOD' ? 'border-green-500' : (q.status === 'Moderate' ? 'border-yellow-500' : 'border-red-500')
-                        } border border-primary/10 flex flex-col justify-between`;
-                    }
-                    
-                    document.getElementById('quality-desc').innerText = q.desc;
+                    const parsedTemp = parseFloat(data.temperature);
+                    if (!isNaN(parsedTemp)) tds = Math.round(parsedTemp * 7);
                 }
+                
+                document.getElementById('ph-val').innerText = ph;
+                document.getElementById('tds-val').innerText = tds;
+                document.getElementById('turbidity-val').innerText = ntu;
+                
+                const rawPh = data && data.ph !== null && data.ph !== undefined ? parseFloat(data.ph) : null;
+                const rawNtu = data && data.ntu !== null && data.ntu !== undefined ? parseFloat(data.ntu) : null;
+                const rawTds = data && data.temperature !== null && data.temperature !== undefined ? parseFloat(data.temperature) * 7 : null;
+                
+                const q = getWaterQuality(rawPh, rawNtu, rawTds);
+                const qualityValEl = document.getElementById('quality-val');
+                if (qualityValEl) qualityValEl.innerText = q.status;
+                
+                // Style Quality card border-l
+                const qualityCard = document.getElementById('quality-card');
+                if (qualityCard) {
+                    qualityCard.className = `md:col-span-1 bg-white p-6 rounded-xl shadow-soft border-l-4 ${
+                        q.status === 'GOOD' ? 'border-green-500' : (q.status === 'Moderate' ? 'border-yellow-500' : (q.status === 'N/A' ? 'border-gray-300' : 'border-red-500'))
+                    } border border-primary/10 flex flex-col justify-between`;
+                }
+                
+                const qualityDescEl = document.getElementById('quality-desc');
+                if (qualityDescEl) qualityDescEl.innerText = q.desc;
             })
-            .catch(e => console.error('Error fetching latest sensor data:', e));
+            .catch(e => {
+                console.error('Error fetching latest sensor data:', e);
+                document.getElementById('ph-val').innerText = '0.0';
+                document.getElementById('tds-val').innerText = '0';
+                document.getElementById('turbidity-val').innerText = '0';
+            });
     }
 
     function loadSensorHistory() {

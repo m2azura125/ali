@@ -264,56 +264,74 @@
         fetch('/api/latest-sensor-data?username={{ urlencode($sensorUsername ?? Auth::user()->username ?? '') }}')
             .then(response => response.json())
             .then(data => {
-                if(data) {
-                    // Update pH
-                    const phValue = data.ph ? parseFloat(data.ph) : 0;
-                    document.getElementById('ph-value').innerText = phValue.toFixed(1);
+                let phValue = 0;
+                let ntuValue = 0;
+                let tempValue = 0;
+                let relayStatus = false;
+                
+                if (data) {
+                    const parsedPh = parseFloat(data.ph);
+                    if (!isNaN(parsedPh)) phValue = parsedPh;
                     
-                    // Update NTU
-                    const ntuValue = data.ntu ? parseFloat(data.ntu) : 0;
-                    document.getElementById('ntu-value').innerText = ntuValue.toFixed(0);
+                    const parsedNtu = parseFloat(data.ntu);
+                    if (!isNaN(parsedNtu)) ntuValue = parsedNtu;
                     
-                    // Update Suhu
-                    const tempValue = data.temperature ? parseFloat(data.temperature).toFixed(0) : '0';
-                    document.getElementById('temp-value').innerHTML = tempValue + '&deg;';
+                    const parsedTemp = parseFloat(data.temperature);
+                    if (!isNaN(parsedTemp)) tempValue = parsedTemp;
                     
-                    // Relay ON = Air Aman, Relay OFF = Air Tidak Aman
-                    const isKotor = !data.relay_status;
-                    
-                    // Update status elemen UI
-                    const statusSection = document.getElementById('status-section');
-                    const statusIconContainer = document.getElementById('status-icon-container');
-                    const statusIcon = document.getElementById('status-icon');
-                    const statusBadge = document.getElementById('status-badge');
-                    const statusText = document.getElementById('status-text');
-                    const statusDesc = document.getElementById('status-desc');
-                    const blurBg1 = document.getElementById('blur-bg-1');
-                    
-                    if (isKotor) {
-                        statusSection.className = 'relative w-full overflow-hidden rounded-xl bg-red-50 border border-red-200 shadow-soft transition-all duration-500 hover:shadow-lg group';
-                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-red-500 text-white shadow-lg shadow-red-500/40';
-                        statusIcon.innerText = 'warning';
+                    relayStatus = !!data.relay_status;
+                }
+                
+                document.getElementById('ph-value').innerText = phValue.toFixed(1);
+                document.getElementById('ntu-value').innerText = ntuValue.toFixed(0);
+                document.getElementById('temp-value').innerHTML = tempValue.toFixed(0) + '&deg;';
+                
+                // Relay ON = Air Aman, Relay OFF = Air Tidak Aman
+                const isKotor = !relayStatus;
+                
+                // Update status elemen UI
+                const statusSection = document.getElementById('status-section');
+                const statusIconContainer = document.getElementById('status-icon-container');
+                const statusIcon = document.getElementById('status-icon');
+                const statusBadge = document.getElementById('status-badge');
+                const statusText = document.getElementById('status-text');
+                const statusDesc = document.getElementById('status-desc');
+                const blurBg1 = document.getElementById('blur-bg-1');
+                
+                if (isKotor) {
+                    if (statusSection) statusSection.className = 'relative w-full overflow-hidden rounded-xl bg-red-50 border border-red-200 shadow-soft transition-all duration-500 hover:shadow-lg group';
+                    if (statusIconContainer) statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-red-500 text-white shadow-lg shadow-red-500/40';
+                    if (statusIcon) statusIcon.innerText = 'warning';
+                    if (statusBadge) {
                         statusBadge.className = 'px-4 py-1.5 rounded-lg bg-red-100 text-red-700 text-sm font-bold tracking-wide uppercase';
                         statusBadge.innerText = 'Status Tidak Normal';
+                    }
+                    if (statusText) {
                         statusText.innerText = 'Air Tidak Aman Digunakan';
                         statusText.className = 'text-3xl md:text-4xl font-bold text-red-700 leading-tight';
-                        statusDesc.innerText = 'Kualitas air tidak memenuhi standar (air kotor). Sedang dalam proses filtrasi atau pembuangan.';
-                        if (blurBg1) blurBg1.className = 'absolute top-0 right-0 w-64 h-64 bg-red-200 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2';
-                    } else {
-                        statusSection.className = 'relative w-full overflow-hidden rounded-xl bg-accent-safe/10 border border-accent-safe/20 shadow-soft transition-all duration-500 hover:shadow-lg group';
-                        statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-accent-safe text-white shadow-lg shadow-accent-safe/40';
-                        statusIcon.innerText = 'verified_user';
+                    }
+                    if (statusDesc) statusDesc.innerText = 'Kualitas air tidak memenuhi standar (air kotor). Sedang dalam proses filtrasi atau pembuangan.';
+                    if (blurBg1) blurBg1.className = 'absolute top-0 right-0 w-64 h-64 bg-red-200 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2';
+                } else {
+                    if (statusSection) statusSection.className = 'relative w-full overflow-hidden rounded-xl bg-accent-safe/10 border border-accent-safe/20 shadow-soft transition-all duration-500 hover:shadow-lg group';
+                    if (statusIconContainer) statusIconContainer.className = 'flex items-center justify-center w-12 h-12 rounded-xl bg-accent-safe text-white shadow-lg shadow-accent-safe/40';
+                    if (statusIcon) statusIcon.innerText = 'verified_user';
+                    if (statusBadge) {
                         statusBadge.className = 'px-4 py-1.5 rounded-lg bg-accent-safe/20 text-primary text-sm font-bold tracking-wide uppercase';
                         statusBadge.innerText = 'Status Normal';
+                    }
+                    if (statusText) {
                         statusText.innerText = 'Air Aman Digunakan';
                         statusText.className = 'text-3xl md:text-4xl font-bold text-text leading-tight';
-                        statusDesc.innerText = 'Kualitas air optimal untuk kebutuhan sehari-hari. Semua indikator dalam batas wajar.';
-                        if (blurBg1) blurBg1.className = 'absolute top-0 right-0 w-64 h-64 bg-accent-safe/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2';
                     }
+                    if (statusDesc) statusDesc.innerText = 'Kualitas air optimal untuk kebutuhan sehari-hari. Semua indikator dalam batas wajar.';
+                    if (blurBg1) blurBg1.className = 'absolute top-0 right-0 w-64 h-64 bg-accent-safe/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2';
+                }
 
-                    // Update Relay Status
-                    const relayEl = document.getElementById('relay-status');
-                    if (data.relay_status) {
+                // Update Relay Status
+                const relayEl = document.getElementById('relay-status');
+                if (relayEl) {
+                    if (relayStatus) {
                         relayEl.innerText = 'RELAY: MENYALA';
                         relayEl.className = 'text-xs font-mono font-bold text-green-700 bg-green-100 border-green-200 px-3 py-1 rounded-lg border';
                     } else {
@@ -322,7 +340,12 @@
                     }
                 }
             })
-            .catch(error => console.error('Error fetching data:', error));
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                document.getElementById('ph-value').innerText = '0.0';
+                document.getElementById('ntu-value').innerText = '0';
+                document.getElementById('temp-value').innerHTML = '0&deg;';
+            });
     }
 
     let previousDataIds = [];

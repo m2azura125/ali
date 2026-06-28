@@ -257,12 +257,22 @@
                 let html = '';
                 records.forEach((rec, i) => {
                     const isNew = previousDataIds.length > 0 && !previousDataIds.includes(rec.id);
-                    const phVal = rec.ph !== null ? parseFloat(rec.ph).toFixed(1) : '-';
-                    const ntuVal = rec.ntu !== null ? parseFloat(rec.ntu).toFixed(0) : '-';
-                    const tempVal = rec.temperature !== null ? parseFloat(rec.temperature).toFixed(1) + '\u00b0C' : '-';
-                    const fuzzyVal = rec.fuzzy !== null ? parseFloat(rec.fuzzy).toFixed(2) : '-';
-                    const phColor = rec.ph !== null && (rec.ph < 6.5 || rec.ph > 8.5) ? 'text-terra font-bold' : 'text-forest-dark';
-                    const ntuColor = rec.ntu !== null && rec.ntu > 25 ? 'text-sand font-bold' : 'text-forest-dark';
+                    
+                    const parsedPh = parseFloat(rec.ph);
+                    const phVal = !isNaN(parsedPh) ? parsedPh.toFixed(1) : '0.0';
+                    
+                    const parsedNtu = parseFloat(rec.ntu);
+                    const ntuVal = !isNaN(parsedNtu) ? parsedNtu.toFixed(0) : '0';
+                    
+                    const parsedTemp = parseFloat(rec.temperature);
+                    const tempVal = !isNaN(parsedTemp) ? parsedTemp.toFixed(1) + '\u00b0C' : '0.0\u00b0C';
+                    
+                    const parsedFuzzy = parseFloat(rec.fuzzy);
+                    const fuzzyVal = !isNaN(parsedFuzzy) ? parsedFuzzy.toFixed(2) : '0.00';
+                    
+                    const phColor = !isNaN(parsedPh) && (parsedPh < 6.5 || parsedPh > 8.5) ? 'text-terra font-bold' : 'text-forest-dark';
+                    const ntuColor = !isNaN(parsedNtu) && parsedNtu > 25 ? 'text-sand font-bold' : 'text-forest-dark';
+                    
                     html += '<tr class="' + (isNew ? 'animate-[fadeHighlight_0.8s_ease-out]' : '') + ' border-b border-mint/10 hover:bg-mist/80 transition-colors">';
                     html += '<td class="px-5 py-3.5"><span class="text-xs font-mono text-forest/40">' + (i+1) + '</span></td>';
                     html += '<td class="px-5 py-3.5"><span class="font-mono font-bold ' + phColor + '">' + phVal + '</span></td>';
@@ -283,8 +293,8 @@
                     const cardPhVal = document.getElementById('card-ph-val');
                     const cardPhStatus = document.getElementById('card-ph-status');
                     if (cardPhVal && cardPhStatus) {
-                        const ph = latest.ph !== null ? parseFloat(latest.ph) : null;
-                        if (ph !== null) {
+                        const ph = parseFloat(latest.ph);
+                        if (!isNaN(ph)) {
                             cardPhVal.innerHTML = ph.toFixed(1);
                             if (ph >= 6.5 && ph <= 8.5) {
                                 cardPhStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
@@ -294,7 +304,7 @@
                                 cardPhStatus.innerText = 'Periksa';
                             }
                         } else {
-                            cardPhVal.innerHTML = '-';
+                            cardPhVal.innerHTML = '0.0';
                             cardPhStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
                             cardPhStatus.innerText = 'Belum Ada';
                         }
@@ -304,8 +314,8 @@
                     const cardNtuVal = document.getElementById('card-ntu-val');
                     const cardNtuStatus = document.getElementById('card-ntu-status');
                     if (cardNtuVal && cardNtuStatus) {
-                        const ntu = latest.ntu !== null ? parseFloat(latest.ntu) : null;
-                        if (ntu !== null) {
+                        const ntu = parseFloat(latest.ntu);
+                        if (!isNaN(ntu)) {
                             cardNtuVal.innerHTML = ntu.toFixed(0) + '<span class="text-sm ml-1">NTU</span>';
                             if (ntu <= 25) {
                                 cardNtuStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
@@ -315,7 +325,7 @@
                                 cardNtuStatus.innerText = 'Alert';
                             }
                         } else {
-                            cardNtuVal.innerHTML = '-';
+                            cardNtuVal.innerHTML = '0 <span class="text-sm ml-1">NTU</span>';
                             cardNtuStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
                             cardNtuStatus.innerText = 'Belum Ada';
                         }
@@ -325,13 +335,13 @@
                     const cardTempVal = document.getElementById('card-temp-val');
                     const cardTempStatus = document.getElementById('card-temp-status');
                     if (cardTempVal && cardTempStatus) {
-                        const temp = latest.temperature !== null ? parseFloat(latest.temperature) : null;
-                        if (temp !== null) {
+                        const temp = parseFloat(latest.temperature);
+                        if (!isNaN(temp)) {
                             cardTempVal.innerHTML = temp.toFixed(1) + '<span class="text-sm ml-1">&deg;C</span>';
                             cardTempStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
                             cardTempStatus.innerText = 'Normal';
                         } else {
-                            cardTempVal.innerHTML = '-';
+                            cardTempVal.innerHTML = '0.0<span class="text-sm ml-1">&deg;C</span>';
                             cardTempStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
                             cardTempStatus.innerText = 'Belum Ada';
                         }
