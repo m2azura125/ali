@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Smart Water Filtration System - Admin Dashboard</title>
-    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -78,8 +78,8 @@
         <!-- Header -->
         <header class="flex items-center justify-between border-b border-primary/10 bg-white/50 px-6 py-4 backdrop-blur-md z-10 sticky top-0 md:px-10">
             <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 text-primary-dark">
-                    <span class="material-symbols-outlined text-primary text-3xl">water_drop</span>
+                <div class="flex items-center gap-3 text-primary-dark">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg" alt="Logo Politeknik Negeri Balikpapan" class="h-10 w-10 object-contain animate-[pulse_3s_ease-in-out_infinite]">
                     <div class="flex flex-col">
                         <span class="font-serif font-bold text-lg leading-[1.1]">Smart Water Filtration</span>
                         <span class="text-[10px] font-bold text-primary/60 tracking-wider">System</span>

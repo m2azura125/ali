@@ -3,7 +3,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Smart Water Filtration System - Login</title>
-<link rel="icon" type="image/png" href="/logo.png">
+<link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -220,8 +220,8 @@
     <div class="bg-white/80 backdrop-blur-xl border border-white/50 shadow-deep rounded-2xl p-8 md:p-10">
         <!-- Logo and Header -->
         <div class="flex flex-col items-center mb-8">
-            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary-dark shadow-sm mb-4">
-                <span class="material-symbols-outlined text-[32px]">water_drop</span>
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 p-2 shadow-md border border-gray-100 mb-4 transition-all duration-300 hover:scale-105">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg" alt="Logo Politeknik Negeri Balikpapan" class="h-full w-full object-contain">
             </div>
             <h1 class="text-2xl font-bold text-text-main tracking-tight">Smart Water Filtration System</h1>
             <p class="text-text-muted text-sm mt-1">Masuk untuk memantau lingkungan</p>

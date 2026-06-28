@@ -3,7 +3,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Smart Water Filtration System - Settings</title>
-<link rel="icon" type="image/png" href="/logo.png">
+<link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -37,8 +37,8 @@
 <a href="/admin" aria-label="Go back" class="flex items-center justify-center w-10 h-10 rounded-lg bg-white hover:bg-surface-muted text-primary-dark transition-colors shadow-soft group">
 <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
 </a>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">water_drop</span>
+<div class="flex items-center gap-3">
+<img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg" alt="Logo Politeknik Negeri Balikpapan" class="h-8 w-8 object-contain">
 <span class="font-serif font-bold text-primary-dark">Smart Water Filtration System</span>
 </div>
 </div>
