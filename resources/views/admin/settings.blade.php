@@ -43,27 +43,34 @@
 </div>
 </div>
 <nav class="hidden md:flex items-center gap-8 mx-auto absolute left-1/2 -translate-x-1/2">
-<a class="text-primary/60 hover:text-primary text-sm font-medium transition-colors" href="/admin">Dashboard</a>
-<a class="text-primary-dark text-sm font-bold border-b-2 border-primary pb-1" href="/admin/settings">Settings</a>
+<a class="text-primary/60 hover:text-primary text-sm font-medium transition-colors" href="/admin">{{ __('Dashboard') }}</a>
+<a class="text-primary-dark text-sm font-bold border-b-2 border-primary pb-1" href="/admin/settings">{{ __('Pengaturan') }}</a>
 </nav>
+<div class="flex items-center gap-3">
+<!-- Language Switcher -->
+<div class="flex items-center gap-1 bg-white border border-primary/10 p-1 rounded-xl shadow-soft">
+    <a href="/set-locale/id" class="px-2 py-1 rounded-lg text-[10px] font-bold transition-all {{ app()->getLocale() === 'id' ? 'bg-primary text-white shadow-sm' : 'text-primary/60 hover:bg-gray-100' }}">ID</a>
+    <a href="/set-locale/en" class="px-2 py-1 rounded-lg text-[10px] font-bold transition-all {{ app()->getLocale() === 'en' ? 'bg-primary text-white shadow-sm' : 'text-primary/60 hover:bg-gray-100' }}">EN</a>
+</div>
 <div class="flex items-center gap-3 rounded-lg bg-white px-3 py-1.5 shadow-soft border border-primary/10">
 <div class="flex flex-col text-right">
 <p class="text-sm font-bold text-primary-dark">{{ Auth::user()->name ?? 'Pak Budi' }}</p>
-<p class="text-xs text-primary/60">Admin</p>
+<p class="text-xs text-primary/60 font-bold">Admin</p>
 </div>
 <div class="w-8 h-8 rounded-full overflow-hidden bg-amber-100 flex items-center justify-center border-2 border-white shadow-sm shrink-0">
 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ Auth::user()->name ?? 'Pak Budi' }}&backgroundColor=ffdfbf" alt="avatar" class="w-full h-full object-cover">
 </div>
-<a href="{{ route('logout') }}" aria-label="Keluar" class="ml-2 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+<a href="{{ route('logout') }}" aria-label="{{ __('Log Out') }}" class="ml-2 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
 <span class="material-symbols-outlined text-[16px]">logout</span>
 </a>
+</div>
 </div>
 </header>
 <div class="flex-1 overflow-y-auto w-full px-4 py-8 md:py-12 pb-24">
 <div class="max-w-[600px] mx-auto flex flex-col gap-8">
 <div class="flex flex-col gap-2 text-center pb-4">
-<h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-primary-dark font-serif">Calibration &amp; Settings</h1>
-<p class="text-primary/60 font-medium">Configure safety thresholds for sensor alerts.</p>
+<h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-primary-dark font-serif">{{ __('Kalibrasi & Pengaturan') }}</h1>
+<p class="text-primary/60 font-medium">{{ __('Konfigurasikan ambang batas aman untuk peringatan sensor.') }}</p>
 </div>
 <section class="bg-surface rounded-xl p-6 md:p-8 shadow-soft border border-transparent transition-all hover:shadow-lg relative overflow-hidden">
 <div class="flex items-center justify-between mb-6">
@@ -72,8 +79,8 @@
 <span class="material-symbols-outlined">science</span>
 </div>
 <div>
-<h3 class="font-bold text-lg leading-tight text-primary-dark">pH Levels</h3>
-<p class="text-xs text-primary/60 font-medium mt-0.5">Acidic vs Alkaline balance</p>
+<h3 class="font-bold text-lg leading-tight text-primary-dark">{{ __('Kadar pH') }}</h3>
+<p class="text-xs text-primary/60 font-medium mt-0.5">{{ __('Keseimbangan Asam vs Basa') }}</p>
 </div>
 </div>
 <span class="bg-primary/10 text-primary-dark px-3 py-1 rounded-lg text-sm font-bold border border-primary/20">6.5 - 8.5 pH</span>
@@ -112,7 +119,7 @@
 </div>
 </div>
 <p class="text-sm text-primary/60 mt-4 leading-relaxed">
-                    Alerts trigger if water acidity falls below <strong class="text-primary-dark">6.5</strong> or rises above <strong class="text-primary-dark">8.5</strong>.
+                    {{ __('Peringatan terpicu jika keasaman air turun di bawah') }} <strong class="text-primary-dark">6.5</strong> {{ __('atau naik di atas') }} <strong class="text-primary-dark">8.5</strong>.
                 </p>
 </section>
 <section class="bg-surface rounded-xl p-6 md:p-8 shadow-soft border border-transparent transition-all hover:shadow-lg">
@@ -122,8 +129,8 @@
 <span class="material-symbols-outlined">grain</span>
 </div>
 <div>
-<h3 class="font-bold text-lg leading-tight text-primary-dark">Turbidity Limit</h3>
-<p class="text-xs text-primary/60 font-medium mt-0.5">Maximum particles allowed</p>
+<h3 class="font-bold text-lg leading-tight text-primary-dark">{{ __('Batas Kekeruhan') }}</h3>
+<p class="text-xs text-primary/60 font-medium mt-0.5">{{ __('Partikel maksimum yang diperbolehkan') }}</p>
 </div>
 </div>
 <div class="flex items-baseline gap-1">
@@ -138,7 +145,7 @@
 </div>
 </div>
 <p class="text-sm text-primary/60 mt-2">
-                    Standard clear water is below 5 NTU. Community alert triggers at <strong class="text-primary-dark">50 NTU</strong>.
+                    {{ __('Air bersih standar berada di bawah 5 NTU. Peringatan warga terpicu pada') }} <strong class="text-primary-dark">50 NTU</strong>.
                 </p>
 </section>
 <section class="bg-surface rounded-xl p-6 md:p-8 shadow-soft border border-transparent transition-all hover:shadow-lg">
@@ -146,7 +153,7 @@
 <div class="p-2 bg-rose-50 rounded-lg text-accent-terra">
 <span class="material-symbols-outlined">notifications_active</span>
 </div>
-<h3 class="font-bold text-lg text-primary-dark">Alert Preferences</h3>
+<h3 class="font-bold text-lg text-primary-dark">{{ __('Preferensi Peringatan') }}</h3>
 </div>
 <div class="space-y-4">
 <label class="flex items-start gap-4 p-4 border border-primary/10 rounded-xl cursor-pointer hover:border-primary/30 transition-colors bg-background-light/50">
@@ -155,8 +162,8 @@
 <div class="w-11 h-6 bg-surface-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#d97706]/20 rounded-md peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-sm after:h-5 after:w-5 after:transition-all peer-checked:bg-[#d97706]"></div>
 </div>
 <div class="flex-1">
-<span class="block text-sm font-bold text-primary-dark mb-1">Email Notifications</span>
-<span class="block text-xs text-primary/60 mb-3">Receive weekly reports and critical alerts.</span>
+<span class="block text-sm font-bold text-primary-dark mb-1">{{ __('Notifikasi Email') }}</span>
+<span class="block text-xs text-primary/60 mb-3">{{ __('Terima laporan mingguan dan peringatan penting.') }}</span>
 <input class="w-full text-sm bg-white border border-primary/10 rounded-lg px-4 py-2 focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-shadow text-primary-dark" placeholder="Enter email address" type="email" value="admin@rw04-cilandak.id"/>
 </div>
 </label>
@@ -166,8 +173,8 @@
 <div class="w-11 h-6 bg-surface-muted peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#d97706]/20 rounded-md peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-sm after:h-5 after:w-5 after:transition-all peer-checked:bg-[#d97706]"></div>
 </div>
 <div class="flex-1">
-<span class="block text-sm font-bold text-primary-dark mb-1">SMS Alerts</span>
-<span class="block text-xs text-primary/60">Immediate text for critical danger levels only.</span>
+<span class="block text-sm font-bold text-primary-dark mb-1">{{ __('Peringatan SMS') }}</span>
+<span class="block text-xs text-primary/60">{{ __('SMS instan untuk tingkat bahaya kritis saja.') }}</span>
 </div>
 </label>
 </div>
@@ -178,11 +185,11 @@
 <div class="max-w-[600px] mx-auto bg-white/90 backdrop-blur-xl p-3 rounded-xl flex items-center justify-between border border-primary/10 shadow-soft">
 <button class="px-6 py-3 rounded-lg text-primary/60 hover:text-accent-terra hover:bg-rose-50 text-sm font-bold transition-colors flex items-center gap-2">
 <span class="material-symbols-outlined text-lg">restart_alt</span>
-                Reset Defaults
+                {{ __('Reset Default') }}
             </button>
 <button class="px-8 py-3 bg-primary hover:bg-[#d97706] text-white rounded-lg text-sm font-bold shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
 <span class="material-symbols-outlined text-lg">save</span>
-                Save Configuration
+                {{ __('Simpan Konfigurasi') }}
             </button>
 </div>
 </div>

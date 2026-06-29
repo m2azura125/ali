@@ -87,20 +87,27 @@
                 </div>
             </div>
             <nav class="hidden md:flex items-center gap-8 mx-auto absolute left-1/2 -translate-x-1/2">
-                <a class="text-primary-dark text-sm font-bold border-b-2 border-primary pb-1" href="/admin">Dashboard</a>
-                <a class="text-primary/60 hover:text-primary text-sm font-medium transition-colors" href="/admin/settings">Settings</a>
+                <a class="text-primary-dark text-sm font-bold border-b-2 border-primary pb-1" href="/admin">{{ __('Dashboard') }}</a>
+                <a class="text-primary/60 hover:text-primary text-sm font-medium transition-colors" href="/admin/settings">{{ __('Pengaturan') }}</a>
             </nav>
-            <div class="flex items-center gap-3 rounded-lg bg-white px-3 py-1.5 shadow-soft border border-primary/10">
-                <div class="flex flex-col text-right">
-                    <p class="text-sm font-bold text-primary-dark">{{ Auth::user()->name ?? 'Pak Budi' }}</p>
-                    <p class="text-xs text-primary/60">Admin</p>
+            <div class="flex items-center gap-3">
+                <!-- Language Switcher -->
+                <div class="flex items-center gap-1 bg-white border border-primary/10 p-1 rounded-xl shadow-soft">
+                    <a href="/set-locale/id" class="px-2 py-1 rounded-lg text-[10px] font-bold transition-all {{ app()->getLocale() === 'id' ? 'bg-primary text-white shadow-sm' : 'text-primary/60 hover:bg-gray-100' }}">ID</a>
+                    <a href="/set-locale/en" class="px-2 py-1 rounded-lg text-[10px] font-bold transition-all {{ app()->getLocale() === 'en' ? 'bg-primary text-white shadow-sm' : 'text-primary/60 hover:bg-gray-100' }}">EN</a>
                 </div>
-                <div class="w-8 h-8 rounded-full overflow-hidden bg-amber-100 flex items-center justify-center border-2 border-white shadow-sm shrink-0">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ Auth::user()->name ?? 'Pak Budi' }}&backgroundColor=ffdfbf" alt="avatar" class="w-full h-full object-cover">
+                <div class="flex items-center gap-3 rounded-lg bg-white px-3 py-1.5 shadow-soft border border-primary/10">
+                    <div class="flex flex-col text-right">
+                        <p class="text-sm font-bold text-primary-dark">{{ Auth::user()->name ?? 'Pak Budi' }}</p>
+                        <p class="text-xs text-primary/60">Admin</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full overflow-hidden bg-amber-100 flex items-center justify-center border-2 border-white shadow-sm shrink-0">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ Auth::user()->name ?? 'Pak Budi' }}&backgroundColor=ffdfbf" alt="avatar" class="w-full h-full object-cover">
+                    </div>
+                    <a href="{{ route('logout') }}" aria-label="{{ __('Log Out') }}" class="ml-2 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">logout</span>
+                    </a>
                 </div>
-                <a href="{{ route('logout') }}" aria-label="Keluar" class="ml-2 flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors">
-                    <span class="material-symbols-outlined text-[16px]">logout</span>
-                </a>
             </div>
         </header>
 
@@ -111,11 +118,11 @@
                 <!-- Title & Selector -->
                 <div class="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <h2 class="font-serif text-3xl font-bold text-primary-dark md:text-4xl">Dashboard</h2>
+                        <h2 class="font-serif text-3xl font-bold text-primary-dark md:text-4xl">{{ __('Dashboard') }}</h2>
                     </div>
                     <div class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-primary/10 shadow-soft">
                         <span class="material-symbols-outlined text-primary text-xl">home_pin</span>
-                        <label for="resident-select" class="text-sm font-bold text-primary-dark">Pilih Rumah:</label>
+                        <label for="resident-select" class="text-sm font-bold text-primary-dark">{{ __('Pilih Rumah:') }}</label>
                         <select id="resident-select" class="rounded-lg border-0 bg-transparent py-1 pl-1 pr-8 text-sm font-bold text-primary focus:ring-0 cursor-pointer">
                             @foreach($residents as $res)
                                 <option value="{{ $res->username }}" {{ $loop->first ? 'selected' : '' }}>
@@ -153,7 +160,7 @@
                     <!-- Card 3: TURBIDITY -->
                     <div class="bg-white p-6 rounded-xl shadow-soft border-l-4 border-cyan-500 flex items-center justify-between">
                         <div class="flex flex-col">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">TURBIDITY</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ __('KEKERUHAN') }}</span>
                             <span id="turbidity-val" class="text-4xl font-extrabold text-primary-dark mt-2">-</span>
                         </div>
                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 shadow-sm">
@@ -168,13 +175,13 @@
                     <div class="md:col-span-3 bg-white p-6 rounded-xl shadow-soft border border-primary/10 flex flex-col justify-between font-bold">
                         <div class="flex items-center justify-between mb-4 border-b border-primary/5 pb-3">
                             <div>
-                                <h3 class="font-serif text-lg font-bold text-primary-dark">Water Quality Monitoring</h3>
-                                <p class="text-xs text-primary/60">Grafik historis parameter kualitas air</p>
+                                <h3 class="font-serif text-lg font-bold text-primary-dark">{{ __('Smart Water Filtration System') }}</h3>
+                                <p class="text-xs text-primary/60">{{ __('Grafik pH, Kekeruhan, dan Suhu berdasarkan data tersimpan') }}</p>
                             </div>
                             <div class="flex items-center gap-1 bg-amber-50 p-1 rounded-lg border border-primary/10" id="chart-filters">
-                                <button onclick="setChartRange('24h')" id="btn-24h" class="px-3 py-1.5 rounded-md text-xs font-bold bg-white text-primary shadow-sm transition-all">24 Jam</button>
-                                <button onclick="setChartRange('7d')" id="btn-7d" class="px-3 py-1.5 rounded-md text-xs font-medium text-primary/70 hover:text-primary transition-all">7 Hari</button>
-                                <button onclick="setChartRange('30d')" id="btn-30d" class="px-3 py-1.5 rounded-md text-xs font-medium text-primary/70 hover:text-primary transition-all">30 Hari</button>
+                                <button onclick="setChartRange('24h')" id="btn-24h" class="px-3 py-1.5 rounded-md text-xs font-bold bg-white text-primary shadow-sm transition-all">{{ __('24 Jam') }}</button>
+                                <button onclick="setChartRange('7d')" id="btn-7d" class="px-3 py-1.5 rounded-md text-xs font-medium text-primary/70 hover:text-primary transition-all">{{ __('7 Hari') }}</button>
+                                <button onclick="setChartRange('30d')" id="btn-30d" class="px-3 py-1.5 rounded-md text-xs font-medium text-primary/70 hover:text-primary transition-all">{{ __('30 Hari') }}</button>
                             </div>
                         </div>
                         <div class="relative w-full h-[260px]">
@@ -185,11 +192,11 @@
                     <!-- Quality Card -->
                     <div id="quality-card" class="md:col-span-1 bg-white p-6 rounded-xl shadow-soft border-l-4 border-yellow-500 border border-primary/10 flex flex-col justify-between">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">QUALITY</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ __('KUALITAS') }}</span>
                             <div id="quality-val" class="text-3xl font-extrabold text-primary-dark mt-4">-</div>
                         </div>
                         <div class="flex items-end justify-between mt-8">
-                            <span id="quality-desc" class="text-xs text-primary/60 font-medium">Memuat...</span>
+                            <span id="quality-desc" class="text-xs text-primary/60 font-medium">{{ __('Memuat...') }}</span>
                             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-50 text-yellow-500 shadow-sm">
                                 <span class="material-symbols-outlined text-2xl">desktop_windows</span>
                             </div>
@@ -201,19 +208,19 @@
                 <div class="bg-white rounded-xl p-6 shadow-soft border border-primary/10 relative overflow-hidden">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-primary/5 pb-4">
                         <div>
-                            <h3 class="font-serif text-xl font-bold text-primary-dark">Water Quality Monitoring</h3>
-                            <p class="text-primary/60 text-sm mt-1">Realtime Database</p>
+                            <h3 class="font-serif text-xl font-bold text-primary-dark">{{ __('Smart Water Filtration System') }}</h3>
+                            <p class="text-primary/60 text-sm mt-1">{{ __('Realtime Database') }}</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="flex items-center gap-2 px-3 py-1.5 bg-primary/5 rounded-lg border border-primary/10">
                                 <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                                <span class="text-xs font-bold text-primary-dark" id="countdown-text">Update dalam 60s</span>
+                                <span class="text-xs font-bold text-primary-dark" id="countdown-text">{{ __('Update dalam') }} 60s</span>
                             </div>
                             <button onclick="loadSensorHistory()" class="flex items-center gap-2 px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary-dark rounded-lg text-xs font-bold transition-colors">
-                                <span class="material-symbols-outlined text-sm">refresh</span>Refresh
+                                <span class="material-symbols-outlined text-sm">refresh</span>{{ __('Refresh') }}
                             </button>
                             <button onclick="window.print()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-md transition-all shadow-blue-500/20 hover:shadow-blue-500/40">
-                                <span class="material-symbols-outlined text-sm">download</span>Cetak Report
+                                <span class="material-symbols-outlined text-sm">download</span>{{ __('Cetak Report') }}
                             </button>
                         </div>
                     </div>
@@ -222,11 +229,11 @@
                             <thead>
                                 <tr class="bg-amber-50/50 border-b border-primary/10">
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">No</th>
-                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">Waktu</th>
+                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('Waktu') }}</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">PH</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">TDS</th>
-                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">TURBIDITY</th>
-                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">Kualitas</th>
+                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('KEKERUHAN') }}</th>
+                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('KUALITAS') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="sensor-history-body">
@@ -234,7 +241,7 @@
                                     <td colspan="6" class="px-5 py-12 text-center text-primary/40">
                                         <div class="flex flex-col items-center gap-3">
                                             <span class="material-symbols-outlined text-[40px] text-primary animate-pulse">sensors</span>
-                                            <span class="text-sm font-medium">Memuat data sensor...</span>
+                                            <span class="text-sm font-medium">{{ __('Memuat data sensor...') }}</span>
                                         </div>
                                     </td>
                                 </tr>
@@ -242,8 +249,8 @@
                         </table>
                     </div>
                     <div class="flex items-center justify-between mt-4 text-primary/50 text-xs">
-                        <span id="total-records">Menampilkan 0 data</span>
-                        <span id="last-updated">Terakhir diperbarui: -</span>
+                        <span id="total-records">{{ __('Menampilkan') }} 0 {{ __('data') }}</span>
+                        <span id="last-updated">{{ __('Terakhir diperbarui') }}: -</span>
                     </div>
                 </div>
 
@@ -260,9 +267,24 @@
     let waterQualityChart = null;
     let currentRange = '24h';
 
+    const translations = {
+        noSensorData: "{{ __('Belum ada data') }}",
+        descGood: "{{ __('Kualitas air optimal untuk kebutuhan sehari-hari. Semua indikator dalam batas wajar.') }}",
+        descModerate: "{{ __('Kualitas air sedang. Disarankan untuk memantau filtrasi.') }}",
+        descUnhealthy: "{{ __('Air kotor atau tidak layak pakai. Filtrasi aktif.') }}",
+        good: "{{ __('Aman') }}",
+        moderate: "{{ __('Status Normal') }}",
+        unhealthy: "{{ __('Tidak Aman') }}",
+        loading: "{{ __('Memuat...') }}",
+        showing: "{{ __('Menampilkan') }}",
+        data: "{{ __('data') }}",
+        lastUpdated: "{{ __('Terakhir diperbarui') }}",
+        updateIn: "{{ __('Update dalam') }}"
+    };
+
     function getWaterQuality(ph, ntu, tds) {
         if (ph === null || ntu === null || ph === undefined || ntu === undefined || isNaN(parseFloat(ph)) || isNaN(parseFloat(ntu))) {
-            return { status: 'N/A', class: 'text-gray-500 bg-gray-50 border-gray-100', desc: 'Belum ada data sensor.' };
+            return { status: 'N/A', class: 'text-gray-500 bg-gray-50 border-gray-100', desc: translations.noSensorData };
         }
         
         const phVal = parseFloat(ph);
@@ -273,21 +295,21 @@
         
         if (isPhNormal && isNtuNormal) {
             return { 
-                status: 'GOOD', 
+                status: translations.good, 
                 class: 'text-green-600 bg-green-50 border-green-200',
-                desc: 'Kualitas air optimal untuk kebutuhan sehari-hari.' 
+                desc: translations.descGood 
             };
         } else if (phVal >= 5.0 && phVal <= 9.0 && ntuVal <= 25) {
             return { 
-                status: 'Moderate', 
+                status: translations.moderate, 
                 class: 'text-yellow-600 bg-yellow-50 border-yellow-200', 
-                desc: 'Kualitas air sedang. Disarankan untuk memantau filtrasi.' 
+                desc: translations.descModerate 
             };
         } else {
             return { 
-                status: 'Unhealthy', 
+                status: translations.unhealthy, 
                 class: 'text-red-600 bg-red-50 border-red-200', 
-                desc: 'Air kotor atau tidak layak pakai. Filtrasi aktif.' 
+                desc: translations.descUnhealthy 
             };
         }
     }
@@ -342,7 +364,7 @@
                 const qualityCard = document.getElementById('quality-card');
                 if (qualityCard) {
                     qualityCard.className = `md:col-span-1 bg-white p-6 rounded-xl shadow-soft border-l-4 ${
-                        q.status === 'GOOD' ? 'border-green-500' : (q.status === 'Moderate' ? 'border-yellow-500' : (q.status === 'N/A' ? 'border-gray-300' : 'border-red-500'))
+                        q.status === translations.good ? 'border-green-500' : (q.status === translations.moderate ? 'border-yellow-500' : (q.status === 'N/A' ? 'border-gray-300' : 'border-red-500'))
                     } border border-primary/10 flex flex-col justify-between`;
                 }
                 
@@ -363,8 +385,8 @@
             .then(records => {
                 const tbody = document.getElementById('sensor-history-body');
                 if (!records || records.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-12 text-center text-primary/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-primary/50">sensors_off</span><span class="text-sm font-medium">Belum ada data sensor</span></div></td></tr>';
-                    document.getElementById('total-records').innerText = 'Menampilkan 0 data';
+                    tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-12 text-center text-primary/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-primary/50">sensors_off</span><span class="text-sm font-medium">' + translations.noSensorData + '</span></div></td></tr>';
+                    document.getElementById('total-records').innerText = translations.showing + ' 0 ' + translations.data;
                     return;
                 }
                 
@@ -390,10 +412,10 @@
                 
                 tbody.innerHTML = html;
                 previousDataIds = newIds;
-                document.getElementById('total-records').innerText = `Menampilkan ${records.length} data terbaru`;
+                document.getElementById('total-records').innerText = `${translations.showing} ${records.length} ${translations.data} ${'{{ __('terbaru') }}'}`;
                 
                 const now = new Date();
-                document.getElementById('last-updated').innerText = `Terakhir diperbarui: ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                document.getElementById('last-updated').innerText = `${translations.lastUpdated}: ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
             })
             .catch(e => console.error('Error fetching sensor history:', e));
     }
@@ -428,7 +450,7 @@
                         yAxisID: 'y'
                     },
                     {
-                        label: 'TURBIDITY',
+                        label: '{{ __('KEKERUHAN') }}',
                         data: [],
                         borderColor: '#06b6d4',
                         backgroundColor: 'rgba(6, 182, 212, 0.05)',
@@ -567,11 +589,11 @@
             const el = document.getElementById('countdown-text');
             if (el) {
                 if (countdownValue <= 0) {
-                    el.innerText = 'Memperbarui...';
+                    el.innerText = '{{ __('Memperbarui...') }}';
                     loadSensorHistory();
                     countdownValue = 60;
                 } else {
-                    el.innerText = `Update dalam ${countdownValue}s`;
+                    el.innerText = translations.updateIn + ' ' + countdownValue + 's';
                 }
             }
         }, 1000);

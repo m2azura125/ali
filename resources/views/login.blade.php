@@ -209,13 +209,19 @@
 </style>
 </head>
 <body class="bg-background-light text-text-main font-display antialiased min-h-screen flex items-center justify-center overflow-hidden relative selection:bg-primary selection:text-text-main">
+<!-- Language Switcher -->
+<div class="absolute top-6 right-6 z-50 flex items-center gap-1 bg-white/80 backdrop-blur border border-white/20 p-1.5 rounded-xl shadow-sm">
+    <a href="/set-locale/id" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ app()->getLocale() === 'id' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:bg-gray-100' }}">ID</a>
+    <a href="/set-locale/en" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ app()->getLocale() === 'en' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:bg-gray-100' }}">EN</a>
+</div>
+
 <!-- Ambient Background Gradient & Blobs -->
 <div class="absolute inset-0 bg-noise pointer-events-none z-0"></div>
 <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
 <div class="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-primary-dark/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
-<div class="w-full max-w-md mx-4 relative z-10" x-data="{ role: '{{ old('role', 'warga') }}', id: '{{ old('identity') }}', pin: '', error: {{ $errors->any() ? 'true' : 'false' }}, errorMsg: '{{ $errors->first('loginError') ?: 'Mohon isi ID dan PIN dengan benar.' }}', submit(e) { if(!this.id || !this.pin) { e.preventDefault(); this.error = true; this.errorMsg = 'Mohon isi ID dan PIN dengan benar.'; setTimeout(() => this.error = false, 5000); } } }">
+<div class="w-full max-w-md mx-4 relative z-10" x-data="{ role: '{{ old('role', 'warga') }}', id: '{{ old('identity') }}', pin: '', error: {{ $errors->any() ? 'true' : 'false' }}, errorMsg: '{{ $errors->first('loginError') ?: __('Mohon isi ID dan PIN dengan benar.') }}', submit(e) { if(!this.id || !this.pin) { e.preventDefault(); this.error = true; this.errorMsg = '{{ __('Mohon isi ID dan PIN dengan benar.') }}'; setTimeout(() => this.error = false, 5000); } } }">
     <!-- Login Card Container -->
     <div class="bg-white/80 backdrop-blur-xl border border-white/50 shadow-deep rounded-2xl p-8 md:p-10">
         <!-- Logo and Header -->
@@ -224,7 +230,7 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg" alt="Logo Politeknik Negeri Balikpapan" class="h-full w-full object-contain">
             </div>
             <h1 class="text-2xl font-bold text-text-main tracking-tight">Smart Water Filtration System</h1>
-            <p class="text-text-muted text-sm mt-1">Masuk untuk memantau lingkungan</p>
+            <p class="text-text-muted text-sm mt-1">{{ __('Masuk untuk memantau lingkungan') }}</p>
         </div>
 
         <!-- Role Selector (Pill Toggle) -->
@@ -232,10 +238,10 @@
             <!-- Sliding Background -->
             <div :class="role === 'warga' ? 'left-1' : 'left-[calc(50%+4px)]'" class="absolute top-1 bottom-1 w-[calc(50%-5px)] bg-white rounded-lg shadow-sm transition-all duration-300 ease-out border border-gray-100"></div>
             <button type="button" :class="role === 'warga' ? 'text-primary-dark font-bold' : 'text-text-muted hover:text-text-main font-medium'" @click="role = 'warga'" class="flex-1 relative z-10 py-2.5 text-center text-sm transition-colors duration-300 rounded-lg focus:outline-none">
-                Warga
+                {{ __('Warga') }}
             </button>
             <button type="button" :class="role === 'rt' ? 'text-primary-dark font-bold' : 'text-text-muted hover:text-text-main font-medium'" @click="role = 'rt'" class="flex-1 relative z-10 py-2.5 text-center text-sm transition-colors duration-300 rounded-lg focus:outline-none">
-                Ketua RT
+                {{ __('Ketua RT') }}
             </button>
         </div>
 
@@ -245,9 +251,9 @@
             <input type="hidden" name="role" :value="role" />
             <!-- ID Input -->
             <div class="group relative">
-                <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2 transition-all group-focus-within:text-primary-dark" for="identity" x-text="role === 'warga' ? 'Nomor Rumah' : 'ID Admin'"></label>
+                <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2 transition-all group-focus-within:text-primary-dark" for="identity" x-text="role === 'warga' ? '{{ __('Nomor Rumah') }}' : '{{ __('ID Admin') }}'"></label>
                 <div class="relative">
-                    <input :placeholder="role === 'warga' ? 'Misal: krisna' : 'Misal: admin'" name="identity" class="block w-full px-4 py-3 text-base text-text-main bg-white/50 border border-gray-300/80 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-gray-400 outline-none" id="identity" type="text" x-model="id"/>
+                    <input :placeholder="role === 'warga' ? '{{ __('Misal: krisna') }}' : '{{ __('Misal: admin') }}'" name="identity" class="block w-full px-4 py-3 text-base text-text-main bg-white/50 border border-gray-300/80 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-gray-400 outline-none" id="identity" type="text" x-model="id"/>
                     <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-focus-within:text-primary transition-colors text-[20px]">
                         home_pin
                     </span>
@@ -255,7 +261,7 @@
             </div>
             <!-- PIN Input -->
             <div class="group relative">
-                <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2 transition-all group-focus-within:text-primary-dark" for="pin">PIN Keamanan</label>
+                <label class="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2 transition-all group-focus-within:text-primary-dark" for="pin">{{ __('PIN Keamanan') }}</label>
                 <div class="relative">
                     <input class="block w-full px-4 py-3 text-base text-text-main bg-white/50 border border-gray-300/80 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-gray-400 tracking-widest outline-none" name="pin" id="pin" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" type="password" x-model="pin"/>
                     <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none group-focus-within:text-primary transition-colors text-[20px]">
@@ -266,7 +272,7 @@
             <!-- Submit Button -->
             <div class="pt-2">
                 <button class="w-full py-3.5 px-6 bg-primary hover:bg-primary-dark text-white hover:text-white font-bold text-base rounded-lg shadow-md shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group/btn" type="submit">
-                    <span x-text="role === 'warga' ? 'Masuk Lingkungan' : 'Masuk Dashboard'"></span>
+                    <span x-text="role === 'warga' ? '{{ __('Masuk Lingkungan') }}' : '{{ __('Masuk Dashboard') }}'"></span>
                     <span class="material-symbols-outlined group-hover/btn:translate-x-1 transition-transform text-[20px]">arrow_forward</span>
                 </button>
             </div>
@@ -275,7 +281,7 @@
         <!-- Footer Links -->
         <div class="mt-8 text-center">
             <a class="text-xs font-semibold text-text-muted hover:text-primary-dark underline decoration-transparent hover:decoration-current transition-all" href="#">
-                Lupa PIN atau ID?
+                {{ __('Lupa PIN atau ID?') }}
             </a>
         </div>
     </div>

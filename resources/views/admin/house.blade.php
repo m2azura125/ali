@@ -88,20 +88,25 @@
 </a>
 <div>
 <div class="flex items-center gap-3">
-<span class="px-3 py-1 rounded-lg bg-forest text-white text-xs font-bold tracking-wider uppercase">Admin View</span>
+<span class="px-3 py-1 rounded-lg bg-forest text-white text-xs font-bold tracking-wider uppercase">{{ __('Admin View') }}</span>
 <span class="flex h-2 w-2 rounded-full bg-mint animate-pulse"></span>
 </div>
-<h1 class="font-serif text-3xl md:text-4xl font-bold text-forest-dark mt-1">Detail Warga: {{ $selectedResident->name ?? $id }}</h1>
+<h1 class="font-serif text-3xl md:text-4xl font-bold text-forest-dark mt-1">{{ __('Detail Warga:') }} {{ $selectedResident->name ?? $id }}</h1>
 </div>
 </div>
 <div class="flex items-center gap-3">
+<!-- Language Switcher -->
+<div class="flex items-center gap-1 bg-white border border-forest/10 p-1 rounded-xl shadow-soft">
+    <a href="/set-locale/id" class="px-2 py-1 rounded-lg text-[10px] font-bold transition-all {{ app()->getLocale() === 'id' ? 'bg-forest text-white shadow-sm' : 'text-forest/60 hover:bg-gray-100' }}">ID</a>
+    <a href="/set-locale/en" class="px-2 py-1 rounded-lg text-[10px] font-bold transition-all {{ app()->getLocale() === 'en' ? 'bg-forest text-white shadow-sm' : 'text-forest/60 hover:bg-gray-100' }}">EN</a>
+</div>
 <button class="flex items-center gap-2 px-6 py-3 rounded-lg bg-mint-light hover:bg-mint/30 text-forest-dark font-semibold transition-colors">
 <span class="material-symbols-outlined text-[20px]">history</span>
 <span>Logs</span>
 </button>
 <button class="flex items-center gap-2 px-6 py-3 rounded-lg bg-forest hover:bg-forest-light text-white font-bold shadow-lg shadow-forest/20 transition-all hover:scale-105">
 <span class="material-symbols-outlined text-[20px]">call</span>
-<span>Call Resident</span>
+<span>{{ __('Hubungi Warga') }}</span>
 </button>
 </div>
 </header>
@@ -110,13 +115,13 @@
 <div class="bg-surface rounded-xl p-6 md:p-8 shadow-soft border border-mint/20 h-full flex flex-col">
 <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
 <div>
-<h2 class="font-serif text-2xl font-semibold text-forest-dark">Grafik Sensor</h2>
-<p class="text-forest/60 text-sm mt-1">Grafik pH, Kekeruhan, dan Suhu berdasarkan data tersimpan</p>
+<h2 class="font-serif text-2xl font-semibold text-forest-dark">{{ __('Grafik Sensor') }}</h2>
+<p class="text-forest/60 text-sm mt-1">{{ __('Grafik pH, Kekeruhan, dan Suhu berdasarkan data tersimpan') }}</p>
 </div>
 <div class="bg-mist p-1 rounded-lg flex items-center" id="chart-filters">
-<button onclick="setChartRange('24h')" id="btn-filter-24h" class="px-4 py-2 rounded-lg text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold">24 Jam</button>
-<button onclick="setChartRange('7d')" id="btn-filter-7d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">7 Hari</button>
-<button onclick="setChartRange('30d')" id="btn-filter-30d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">30 Hari</button>
+<button onclick="setChartRange('24h')" id="btn-filter-24h" class="px-4 py-2 rounded-lg text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold">{{ __('24 Jam') }}</button>
+<button onclick="setChartRange('7d')" id="btn-filter-7d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">{{ __('7 Hari') }}</button>
+<button onclick="setChartRange('30d')" id="btn-filter-30d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">{{ __('30 Hari') }}</button>
 </div>
 </div>
 <div class="w-full flex-grow flex flex-col gap-6 pt-4 pb-2 px-2">
@@ -126,7 +131,7 @@
 <div class="w-full h-48 relative">
 <div class="flex items-center gap-2 mb-2">
 <span class="material-symbols-outlined text-forest text-[20px]">electric_bolt</span>
-<span class="text-sm font-semibold text-forest-dark">Siklus Relay (ON/OFF)</span>
+<span class="text-sm font-semibold text-forest-dark">{{ __('Siklus Relay (ON/OFF)') }}</span>
 <span id="relay-status-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold">-</span>
 </div>
 <canvas id="relayChart"></canvas>
@@ -136,17 +141,17 @@
 </div>
 <div class="flex flex-col gap-6">
 <div class="bg-surface rounded-xl p-6 shadow-soft border border-mint/20">
-<h3 class="font-serif text-lg font-semibold text-forest-dark mb-4">Sensor Terkini</h3>
+<h3 class="font-serif text-lg font-semibold text-forest-dark mb-4">{{ __('Sensor Terkini') }}</h3>
 <div class="flex flex-col gap-4">
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-mint text-2xl">emoji_events</span>
 <span id="card-ph-status" class="text-xs font-bold {{ isset($latestData) && $latestData->ph !== null && $latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ph !== null ? 'text-terra bg-terra/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
-{{ isset($latestData) && $latestData->ph !== null ? ($latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? 'Normal' : 'Periksa') : 'Belum Ada' }}
+{{ isset($latestData) && $latestData->ph !== null ? ($latestData->ph >= 6.5 && $latestData->ph <= 8.5 ? __('Normal') : __('Periksa')) : __('Belum Ada') }}
 </span>
 </div>
 <div>
-<span class="text-sm text-forest/60 font-medium">Current pH</span>
+<span class="text-sm text-forest/60 font-medium">{{ __('pH Saat Ini') }}</span>
 <div id="card-ph-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ph !== null ? number_format($latestData->ph, 1) : '-' }}</div>
 </div>
 </div>
@@ -154,11 +159,11 @@
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-sand text-2xl">grain</span>
 <span id="card-ntu-status" class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 25 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
-{{ isset($latestData) && $latestData->ntu !== null ? ($latestData->ntu <= 25 ? 'Jernih' : 'Alert') : 'Belum Ada' }}
+{{ isset($latestData) && $latestData->ntu !== null ? ($latestData->ntu <= 25 ? __('Jernih') : __('Alert')) : __('Belum Ada') }}
 </span>
 </div>
 <div>
-<span class="text-sm text-forest/60 font-medium">Turbidity</span>
+<span class="text-sm text-forest/60 font-medium">{{ __('Kekeruhan') }}</span>
 <div id="card-ntu-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->ntu !== null ? number_format($latestData->ntu, 0) : '-' }}<span class="text-sm ml-1">NTU</span></div>
 </div>
 </div>
@@ -166,11 +171,11 @@
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-terra text-2xl">thermostat</span>
 <span id="card-temp-status" class="text-xs font-bold {{ isset($latestData) && $latestData->temperature !== null ? 'text-mint bg-mint/10' : 'text-forest/60 bg-white' }} px-2 py-0.5 rounded-lg">
-{{ isset($latestData) && $latestData->temperature !== null ? 'Normal' : 'Belum Ada' }}
+{{ isset($latestData) && $latestData->temperature !== null ? __('Normal') : __('Belum Ada') }}
 </span>
 </div>
 <div>
-<span class="text-sm text-forest/60 font-medium">Suhu Air</span>
+<span class="text-sm text-forest/60 font-medium">{{ __('Suhu Air') }}</span>
 <div id="card-temp-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->temperature !== null ? number_format($latestData->temperature, 1) : '-' }}<span class="text-sm ml-1">&deg;C</span></div>
 </div>
 </div>
@@ -178,13 +183,13 @@
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-forest text-2xl">electric_bolt</span>
 <span id="card-relay-status" class="text-xs font-bold {{ isset($latestData) && $latestData->relay_status ? 'text-mint bg-mint/10' : 'text-terra bg-terra/10' }} px-2 py-0.5 rounded-lg">
-{{ isset($latestData) && $latestData->relay_status ? 'Aktif' : 'Mati' }}
+{{ isset($latestData) && $latestData->relay_status ? __('Aktif') : __('Mati') }}
 </span>
 </div>
 <div>
-<span class="text-sm text-forest/60 font-medium">Keadaan Relay</span>
+<span class="text-sm text-forest/60 font-medium">{{ __('Keadaan Relay') }}</span>
 <div id="card-relay-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->relay_status ? 'ON' : 'OFF' }}</div>
-<div class="text-[11px] font-semibold text-forest/50 uppercase mt-1">Aktivasi: <span id="card-relay-count" class="font-mono font-bold text-forest-dark">{{ $relayCount ?? 0 }}</span> Kali</div>
+<div class="text-[11px] font-semibold text-forest/50 uppercase mt-1">{{ __('Aktivasi:') }} <span id="card-relay-count" class="font-mono font-bold text-forest-dark">{{ $relayCount ?? 0 }}</span> {{ __('Kali') }}</div>
 </div>
 </div>
 </div>
@@ -198,12 +203,12 @@
 <div class="relative z-10">
 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
 <div>
-<h3 class="font-serif text-xl font-bold text-forest-dark flex items-center gap-2"><span class="material-symbols-outlined text-forest text-[24px]">table_chart</span> Riwayat Data Sensor</h3>
-<p class="text-forest/60 text-sm mt-1">Data sensor terbaru, auto-refresh setiap 1 menit</p>
+<h3 class="font-serif text-xl font-bold text-forest-dark flex items-center gap-2"><span class="material-symbols-outlined text-forest text-[24px]">table_chart</span> {{ __('Riwayat Data Sensor') }}</h3>
+<p class="text-forest/60 text-sm mt-1">{{ __('Data sensor terbaru, auto-refresh setiap 1 menit') }}</p>
 </div>
 <div class="flex items-center gap-3">
-<div class="flex items-center gap-2 px-4 py-2 bg-mint/10 rounded-lg border border-mint/20"><span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span><span class="text-xs font-bold text-forest-dark" id="countdown-text">Update dalam 60s</span></div>
-<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-forest/10 hover:bg-forest/20 text-forest-dark rounded-lg text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>Refresh</button>
+<div class="flex items-center gap-2 px-4 py-2 bg-mint/10 rounded-lg border border-mint/20"><span class="w-2 h-2 rounded-full bg-mint animate-pulse"></span><span class="text-xs font-bold text-forest-dark" id="countdown-text">{{ __('Update dalam') }} 60s</span></div>
+<button onclick="loadSensorHistory()" class="flex items-center gap-2 px-4 py-2 bg-forest/10 hover:bg-forest/20 text-forest-dark rounded-lg text-sm font-bold transition-colors"><span class="material-symbols-outlined text-[16px]">refresh</span>{{ __('Refresh') }}</button>
 </div>
 </div>
 <div class="overflow-x-auto rounded-xl border border-mint/20">
@@ -212,17 +217,17 @@
 <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">#</th>
 <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">pH</th>
 <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">NTU</th>
-<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Suhu</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">{{ __('Suhu') }}</th>
 <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Fuzzy</th>
 <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Relay</th>
-<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">Waktu</th>
+<th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-forest/60">{{ __('Waktu') }}</th>
 </tr></thead>
 <tbody id="sensor-history-body">
-<tr><td colspan="7" class="px-5 py-12 text-center text-forest/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-mint animate-pulse">sensors</span><span class="text-sm font-medium">Memuat data sensor...</span></div></td></tr>
+<tr><td colspan="7" class="px-5 py-12 text-center text-forest/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-mint animate-pulse">sensors</span><span class="text-sm font-medium">{{ __('Memuat data sensor...') }}</span></div></td></tr>
 </tbody>
 </table>
 </div>
-<div class="flex items-center justify-between mt-4 text-forest/50 text-xs"><span id="total-records">Menampilkan 0 data</span><span id="last-updated">Terakhir diperbarui: -</span></div>
+<div class="flex items-center justify-between mt-4 text-forest/50 text-xs"><span id="total-records">{{ __('Menampilkan') }} 0 {{ __('data') }}</span><span id="last-updated">{{ __('Terakhir diperbarui') }}: -</span></div>
 </div>
 </section>
 
@@ -232,6 +237,24 @@
     let previousDataIds = [];
     let countdownValue = 60;
 
+    const translations = {
+        normal: "{{ __('Normal') }}",
+        check: "{{ __('Periksa') }}",
+        none: "{{ __('Belum Ada') }}",
+        clear: "{{ __('Jernih') }}",
+        alert: "{{ __('Alert') }}",
+        active: "{{ __('Aktif') }}",
+        off: "{{ __('Mati') }}",
+        showing: "{{ __('Menampilkan') }}",
+        data: "{{ __('data') }}",
+        latestData: "{{ __('terbaru') }}",
+        lastUpdated: "{{ __('Terakhir diperbarui') }}",
+        updateIn: "{{ __('Update dalam') }}",
+        noSensorData: "{{ __('Belum ada data sensor') }}",
+        activeTime: "{{ __('waktu') }}",
+        activeTxt: "{{ __('Aktif') }}"
+    };
+
     function formatRelayStatus(status) {
         if (status) return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-mint-light text-forest-dark text-xs font-bold border border-mint">ON</span>';
         return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-terra/10 text-terra text-xs font-bold border border-terra/20">OFF</span>';
@@ -240,7 +263,11 @@
     function formatTime(dateStr) {
         if (!dateStr) return '-';
         const d = new Date(dateStr);
-        const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        const months = [
+            "{{ __('Jan') }}", "{{ __('Feb') }}", "{{ __('Mar') }}", "{{ __('Apr') }}",
+            "{{ __('Mei') }}", "{{ __('Jun') }}", "{{ __('Jul') }}", "{{ __('Agu') }}",
+            "{{ __('Sep') }}", "{{ __('Okt') }}", "{{ __('Nov') }}", "{{ __('Des') }}"
+        ];
         return String(d.getDate()).padStart(2,'0') + ' ' + months[d.getMonth()] + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
     }
 
@@ -250,8 +277,8 @@
             .then(records => {
                 const tbody = document.getElementById('sensor-history-body');
                 if (!records || records.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-12 text-center text-forest/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-mint/50">sensors_off</span><span class="text-sm font-medium">Belum ada data sensor</span></div></td></tr>';
-                    document.getElementById('total-records').innerText = 'Menampilkan 0 data';
+                    tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-12 text-center text-forest/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-mint/50">sensors_off</span><span class="text-sm font-medium">' + translations.noSensorData + '</span></div></td></tr>';
+                    document.getElementById('total-records').innerText = translations.showing + ' 0 ' + translations.data;
                     return;
                 }
                 const newIds = records.map(r => r.id);
@@ -299,15 +326,15 @@
                             cardPhVal.innerHTML = ph.toFixed(1);
                             if (ph >= 6.5 && ph <= 8.5) {
                                 cardPhStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
-                                cardPhStatus.innerText = 'Normal';
+                                cardPhStatus.innerText = translations.normal;
                             } else {
                                 cardPhStatus.className = 'text-xs font-bold text-terra bg-terra/10 px-2 py-0.5 rounded-lg';
-                                cardPhStatus.innerText = 'Periksa';
+                                cardPhStatus.innerText = translations.check;
                             }
                         } else {
                             cardPhVal.innerHTML = '0.0';
                             cardPhStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
-                            cardPhStatus.innerText = 'Belum Ada';
+                            cardPhStatus.innerText = translations.none;
                         }
                     }
 
@@ -320,15 +347,15 @@
                             cardNtuVal.innerHTML = ntu.toFixed(0) + '<span class="text-sm ml-1">NTU</span>';
                             if (ntu <= 25) {
                                 cardNtuStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
-                                cardNtuStatus.innerText = 'Jernih';
+                                cardNtuStatus.innerText = translations.clear;
                             } else {
                                 cardNtuStatus.className = 'text-xs font-bold text-sand bg-sand/10 px-2 py-0.5 rounded-lg';
-                                cardNtuStatus.innerText = 'Alert';
+                                cardNtuStatus.innerText = translations.alert;
                             }
                         } else {
                             cardNtuVal.innerHTML = '0 <span class="text-sm ml-1">NTU</span>';
                             cardNtuStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
-                            cardNtuStatus.innerText = 'Belum Ada';
+                            cardNtuStatus.innerText = translations.none;
                         }
                     }
 
@@ -340,11 +367,11 @@
                         if (!isNaN(temp)) {
                             cardTempVal.innerHTML = temp.toFixed(1) + '<span class="text-sm ml-1">&deg;C</span>';
                             cardTempStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
-                            cardTempStatus.innerText = 'Normal';
+                            cardTempStatus.innerText = translations.normal;
                         } else {
                             cardTempVal.innerHTML = '0.0<span class="text-sm ml-1">&deg;C</span>';
                             cardTempStatus.className = 'text-xs font-bold text-forest/60 bg-white px-2 py-0.5 rounded-lg';
-                            cardTempStatus.innerText = 'Belum Ada';
+                            cardTempStatus.innerText = translations.none;
                         }
                     }
 
@@ -356,11 +383,11 @@
                         if (status) {
                             cardRelayVal.innerText = 'ON';
                             cardRelayStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
-                            cardRelayStatus.innerText = 'Aktif';
+                            cardRelayStatus.innerText = translations.active;
                         } else {
                             cardRelayVal.innerText = 'OFF';
                             cardRelayStatus.className = 'text-xs font-bold text-terra bg-terra/10 px-2 py-0.5 rounded-lg';
-                            cardRelayStatus.innerText = 'Mati';
+                            cardRelayStatus.innerText = translations.off;
                         }
                     }
 
@@ -370,9 +397,9 @@
                     }
                 }
 
-                document.getElementById('total-records').innerText = 'Menampilkan ' + records.length + ' data terbaru';
+                document.getElementById('total-records').innerText = translations.showing + ' ' + records.length + ' ' + translations.data + ' ' + translations.latestData;
                 const now = new Date();
-                document.getElementById('last-updated').innerText = 'Terakhir diperbarui: ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+                document.getElementById('last-updated').innerText = translations.lastUpdated + ': ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
             })
             .catch(e => console.error('Error:', e));
     }
@@ -385,11 +412,11 @@
         countdownValue--;
         const el = document.getElementById('countdown-text');
         if (countdownValue <= 0) {
-            el.innerText = 'Memperbarui...';
+            el.innerText = '{{ __('Memperbarui...') }}';
             loadSensorHistory();
             countdownValue = 60;
         } else {
-            el.innerText = 'Update dalam ' + countdownValue + 's';
+            el.innerText = translations.updateIn + ' ' + countdownValue + 's';
         }
     }, 1000);
 
@@ -518,7 +545,7 @@
                         displayColors: false,
                         callbacks: {
                             label: function(context) {
-                                return context.parsed.y === 1 ? '🟢 ON (Aktif)' : '🔴 OFF (Mati)';
+                                return context.parsed.y === 1 ? '🟢 ON (' + translations.activeTxt + ')' : '🔴 OFF (' + translations.off + ')';
                             }
                         }
                     }
@@ -571,10 +598,10 @@
                         const onPercent = Math.round((onCount / totalCount) * 100);
                         if (lastStatus === 1) {
                             badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold text-green-700 bg-green-100 border border-green-200';
-                            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> ON — Aktif ' + onPercent + '% waktu';
+                            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> ON — ' + translations.activeTxt + ' ' + onPercent + '% ' + translations.activeTime;
                         } else {
                             badge.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold text-red-600 bg-red-50 border border-red-200';
-                            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> OFF — Aktif ' + onPercent + '% waktu';
+                            badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> OFF — ' + translations.activeTxt + ' ' + onPercent + '% ' + translations.activeTime;
                         }
                     }
                 }
