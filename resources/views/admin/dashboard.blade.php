@@ -133,12 +133,12 @@
                     </div>
                 </div>
 
-                <!-- Row 1: Metrics (pH, TDS, TURBIDITY) -->
+                <!-- Row 1: Metrics (pH, Suhu, Kekeruhan) -->
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-3 mb-6">
                     <!-- Card 1: pH -->
                     <div class="bg-white p-6 rounded-xl shadow-soft border-l-4 border-blue-500 flex items-center justify-between">
                         <div class="flex flex-col">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">PH</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-400">PH</span>
                             <span id="ph-val" class="text-4xl font-extrabold text-primary-dark mt-2">-</span>
                         </div>
                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-500 shadow-sm">
@@ -146,25 +146,25 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: TDS -->
-                    <div class="bg-white p-6 rounded-xl shadow-soft border-l-4 border-green-500 flex items-center justify-between">
+                    <!-- Card 2: Suhu Air -->
+                    <div class="bg-white p-6 rounded-xl shadow-soft border-l-4 border-amber-500 flex items-center justify-between">
                         <div class="flex flex-col">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">TDS</span>
-                            <span id="tds-val" class="text-4xl font-extrabold text-primary-dark mt-2">-</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400">{{ __('SUHU AIR') }}</span>
+                            <span id="suhu-val" class="text-4xl font-extrabold text-primary-dark mt-2">-</span>
                         </div>
-                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-green-500 shadow-sm">
-                            <span class="material-symbols-outlined text-2xl">waves</span>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-500 shadow-sm">
+                            <span class="material-symbols-outlined text-2xl">thermostat</span>
                         </div>
                     </div>
 
-                    <!-- Card 3: TURBIDITY -->
+                    <!-- Card 3: Kekeruhan -->
                     <div class="bg-white p-6 rounded-xl shadow-soft border-l-4 border-cyan-500 flex items-center justify-between">
                         <div class="flex flex-col">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ __('KEKERUHAN') }}</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">{{ __('KEKERUHAN') }}</span>
                             <span id="turbidity-val" class="text-4xl font-extrabold text-primary-dark mt-2">-</span>
                         </div>
                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-50 text-cyan-500 shadow-sm">
-                            <span class="material-symbols-outlined text-2xl">science</span>
+                            <span class="material-symbols-outlined text-2xl">blur_on</span>
                         </div>
                     </div>
                 </div>
@@ -241,7 +241,7 @@
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">No</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('Waktu') }}</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">PH</th>
-                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">TDS</th>
+                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('SUHU') }}</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('KEKERUHAN') }}</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('KUALITAS') }}</th>
                                 </tr>
@@ -292,7 +292,7 @@
         updateIn: "{{ __('Update dalam') }}"
     };
 
-    function getWaterQuality(ph, ntu, tds) {
+    function getWaterQuality(ph, ntu) {
         if (ph === null || ntu === null || ph === undefined || ntu === undefined || isNaN(parseFloat(ph)) || isNaN(parseFloat(ntu))) {
             return { status: 'N/A', class: 'text-gray-500 bg-gray-50 border-gray-100', desc: translations.noSensorData };
         }
@@ -344,7 +344,7 @@
             .then(r => r.json())
             .then(data => {
                 let ph = '0.0';
-                let tds = '0';
+                let suhu = '0';
                 let ntu = '0';
                 let amanCount = 0;
                 let tidakAmanCount = 0;
@@ -357,23 +357,22 @@
                     if (!isNaN(parsedNtu)) ntu = parsedNtu.toFixed(0);
                     
                     const parsedTemp = parseFloat(data.temperature);
-                    if (!isNaN(parsedTemp)) tds = Math.round(parsedTemp * 7);
+                    if (!isNaN(parsedTemp)) suhu = parsedTemp.toFixed(1) + ' °C';
                     
                     amanCount = data.aman_count || 0;
                     tidakAmanCount = data.tidak_aman_count || 0;
                 }
                 
                 document.getElementById('ph-val').innerText = ph;
-                document.getElementById('tds-val').innerText = tds;
+                document.getElementById('suhu-val').innerText = suhu;
                 document.getElementById('turbidity-val').innerText = ntu;
                 document.getElementById('quality-safe-count').innerText = amanCount;
                 document.getElementById('quality-unsafe-count').innerText = tidakAmanCount;
                 
                 const rawPh = data && data.ph !== null && data.ph !== undefined ? parseFloat(data.ph) : null;
                 const rawNtu = data && data.ntu !== null && data.ntu !== undefined ? parseFloat(data.ntu) : null;
-                const rawTds = data && data.temperature !== null && data.temperature !== undefined ? parseFloat(data.temperature) * 7 : null;
                 
-                const q = getWaterQuality(rawPh, rawNtu, rawTds);
+                const q = getWaterQuality(rawPh, rawNtu);
                 const qualityValEl = document.getElementById('quality-val');
                 if (qualityValEl) qualityValEl.innerText = q.status;
                 
@@ -391,7 +390,7 @@
             .catch(e => {
                 console.error('Error fetching latest sensor data:', e);
                 document.getElementById('ph-val').innerText = '0.0';
-                document.getElementById('tds-val').innerText = '0';
+                document.getElementById('suhu-val').innerText = '0';
                 document.getElementById('turbidity-val').innerText = '0';
             });
     }
@@ -413,15 +412,15 @@
                     const isNew = previousDataIds.length > 0 && !previousDataIds.includes(rec.id);
                     const phVal = rec.ph !== null ? parseFloat(rec.ph).toFixed(1) : '-';
                     const ntuVal = rec.ntu !== null ? parseFloat(rec.ntu).toFixed(0) : '-';
-                    const tdsVal = rec.temperature !== null ? Math.round(parseFloat(rec.temperature) * 7) : '-';
+                    const suhuVal = rec.temperature !== null ? parseFloat(rec.temperature).toFixed(1) + '°C' : '-';
                     
-                    const q = getWaterQuality(rec.ph, rec.ntu, tdsVal);
+                    const q = getWaterQuality(rec.ph, rec.ntu);
                     
                     html += `<tr class="${isNew ? 'animate-[fadeHighlight_0.8s_ease-out]' : ''} border-b border-primary/10 hover:bg-amber-50/20 transition-colors">`;
                     html += `<td class="px-5 py-3.5"><span class="text-xs font-mono text-primary/40">${i + 1}</span></td>`;
                     html += `<td class="px-5 py-3.5"><span class="font-mono text-xs text-primary-dark/85">${formatTime(rec.created_at)}</span></td>`;
                     html += `<td class="px-5 py-3.5"><span class="font-mono font-bold text-primary-dark">${phVal}</span></td>`;
-                    html += `<td class="px-5 py-3.5"><span class="font-mono font-bold text-primary-dark">${tdsVal}</span></td>`;
+                    html += `<td class="px-5 py-3.5"><span class="font-mono font-bold text-primary-dark">${suhuVal}</span></td>`;
                     html += `<td class="px-5 py-3.5"><span class="font-mono font-bold text-primary-dark">${ntuVal}</span></td>`;
                     html += `<td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${q.class} border">${q.status}</span></td>`;
                     html += '</tr>';
@@ -448,34 +447,37 @@
                         label: 'PH',
                         data: [],
                         borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.08)',
                         borderWidth: 2,
                         pointRadius: 2,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#3b82f6',
                         fill: false,
-                        tension: 0.3,
-                        yAxisID: 'y1'
+                        tension: 0.3
                     },
                     {
-                        label: 'TDS',
+                        label: '{{ __("Suhu Air") }}',
                         data: [],
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
-                        borderWidth: 2.5,
+                        borderColor: '#d97706',
+                        backgroundColor: 'rgba(217, 119, 6, 0.08)',
+                        borderWidth: 2,
                         pointRadius: 2,
-                        fill: true,
-                        tension: 0.3,
-                        yAxisID: 'y'
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#d97706',
+                        fill: false,
+                        tension: 0.3
                     },
                     {
-                        label: '{{ __('KEKERUHAN') }}',
+                        label: '{{ __("Kekeruhan") }}',
                         data: [],
                         borderColor: '#06b6d4',
-                        backgroundColor: 'rgba(6, 182, 212, 0.05)',
+                        backgroundColor: 'rgba(6, 182, 212, 0.08)',
                         borderWidth: 2,
                         pointRadius: 2,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: '#06b6d4',
                         fill: false,
-                        tension: 0.3,
-                        yAxisID: 'y1'
+                        tension: 0.3
                     }
                 ]
             },
@@ -493,28 +495,12 @@
                         position: 'left',
                         title: {
                             display: true,
-                            text: 'TDS (ppm)',
-                            font: { weight: 'bold' }
+                            text: '{{ __("Nilai") }}',
+                            font: { weight: 'bold', size: 11 }
                         },
-                        min: 0,
-                        max: 300,
+                        beginAtZero: true,
                         grid: {
                             color: 'rgba(146, 64, 14, 0.05)'
-                        }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: {
-                            display: true,
-                            text: 'pH / Turbidity (NTU)',
-                            font: { weight: 'bold' }
-                        },
-                        min: 0,
-                        max: 20,
-                        grid: {
-                            drawOnChartArea: false,
                         }
                     },
                     x: {
@@ -531,7 +517,9 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            boxWidth: 12,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            boxWidth: 8,
                             font: { weight: 'bold', size: 11 }
                         }
                     },
@@ -564,11 +552,9 @@
             .then(res => res.json())
             .then(data => {
                 if (data && waterQualityChart) {
-                    const tdsData = data.temp_data.map(temp => Math.round(parseFloat(temp) * 7));
-                    
                     waterQualityChart.data.labels = data.labels;
                     waterQualityChart.data.datasets[0].data = data.ph_data;
-                    waterQualityChart.data.datasets[1].data = tdsData;
+                    waterQualityChart.data.datasets[1].data = data.temp_data;
                     waterQualityChart.data.datasets[2].data = data.ntu_data;
                     waterQualityChart.update();
                 }
