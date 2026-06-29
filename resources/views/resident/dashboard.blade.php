@@ -138,12 +138,13 @@
                         </p>
 </div>
 <div class="flex flex-col items-center lg:items-end gap-3 w-full lg:w-auto mt-4 lg:mt-0">
-<div class="glass-panel p-6 rounded-xl border border-white/50 shadow-sm flex flex-col items-center gap-4 min-w-[200px]">
+<div class="glass-panel p-6 rounded-xl border border-white/50 shadow-sm flex flex-col items-center gap-2 min-w-[200px]">
 <span class="text-sm font-bold text-text/60 uppercase tracking-wider text-center">Filtrasi Berhasil</span>
 <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-green-100 shadow-inner border border-green-200">
 <span class="material-symbols-outlined text-[36px] text-green-600">lightbulb</span>
 </div>
 <span id="relay-status" class="text-xs font-mono font-bold {{ isset($latestData) && $latestData->relay_status ? 'text-green-700 bg-green-100 border-green-200' : 'text-red-700 bg-red-100 border-red-200' }} px-3 py-1 rounded-lg border">RELAY: {{ isset($latestData) && $latestData->relay_status ? 'MENYALA' : 'MATI' }}</span>
+<span class="text-[11px] font-semibold text-text/50 uppercase mt-1">Aktivasi: <span id="relay-count" class="font-mono font-bold text-primary">{{ $relayCount ?? 0 }}</span> Kali</span>
 </div>
 </div>
 </div>
@@ -338,6 +339,11 @@
                         relayEl.innerText = 'RELAY: MATI';
                         relayEl.className = 'text-xs font-mono font-bold text-red-700 bg-red-100 border-red-200 px-3 py-1 rounded-lg border';
                     }
+                }
+
+                const relayCountEl = document.getElementById('relay-count');
+                if (relayCountEl && data && data.relay_count !== undefined) {
+                    relayCountEl.innerText = data.relay_count;
                 }
             })
             .catch(error => {

@@ -184,6 +184,7 @@
 <div>
 <span class="text-sm text-forest/60 font-medium">Keadaan Relay</span>
 <div id="card-relay-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->relay_status ? 'ON' : 'OFF' }}</div>
+<div class="text-[11px] font-semibold text-forest/50 uppercase mt-1">Aktivasi: <span id="card-relay-count" class="font-mono font-bold text-forest-dark">{{ $relayCount ?? 0 }}</span> Kali</div>
 </div>
 </div>
 </div>
@@ -361,6 +362,11 @@
                             cardRelayStatus.className = 'text-xs font-bold text-terra bg-terra/10 px-2 py-0.5 rounded-lg';
                             cardRelayStatus.innerText = 'Mati';
                         }
+                    }
+
+                    const cardRelayCount = document.getElementById('card-relay-count');
+                    if (cardRelayCount && latest.relay_count !== undefined) {
+                        cardRelayCount.innerText = latest.relay_count;
                     }
                 }
 

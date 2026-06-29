@@ -74,7 +74,32 @@ Route::get('/latest-sensor-data', function (Request $request) {
     }
 
     $latestData = $query->latest()->first();
-    return response()->json($latestData);
+    
+    if ($latestData) {
+        $history = SensorData::query()
+            ->where('user_id', $latestData->user_id)
+            ->orderBy('created_at', 'asc')
+            ->get(['relay_status']);
+        
+        $relayCount = 0;
+        $lastStatus = null;
+        foreach ($history as $row) {
+            $currentStatus = (int)$row->relay_status;
+            if ($lastStatus !== null && $lastStatus === 0 && $currentStatus === 1) {
+                $relayCount++;
+            }
+            $lastStatus = $currentStatus;
+        }
+        if ($history->isNotEmpty() && (int)$history->first()->relay_status === 1) {
+            $relayCount = max(1, $relayCount);
+        }
+        
+        $latestDataArray = $latestData->toArray();
+        $latestDataArray['relay_count'] = $relayCount;
+        return response()->json($latestDataArray);
+    }
+    
+    return response()->json(null);
 });
 
 Route::get('/sensor-history', function (Request $request) {
@@ -101,6 +126,28 @@ Route::get('/sensor-history', function (Request $request) {
     }
 
     $records = $query->latest()->take($limit)->get();
+    if ($records->isNotEmpty()) {
+        $firstRecord = $records->first();
+        $history = SensorData::query()
+            ->where('user_id', $firstRecord->user_id)
+            ->orderBy('created_at', 'asc')
+            ->get(['relay_status']);
+        
+        $relayCount = 0;
+        $lastStatus = null;
+        foreach ($history as $row) {
+            $currentStatus = (int)$row->relay_status;
+            if ($lastStatus !== null && $lastStatus === 0 && $currentStatus === 1) {
+                $relayCount++;
+            }
+            $lastStatus = $currentStatus;
+        }
+        if ($history->isNotEmpty() && (int)$history->first()->relay_status === 1) {
+            $relayCount = max(1, $relayCount);
+        }
+        
+        $records[0]->relay_count = $relayCount;
+    }
     return response()->json($records);
 });
 

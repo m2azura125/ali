@@ -6,7 +6,8 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/', [AuthController::class, 'showLogin']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -18,9 +19,24 @@ Route::middleware('auth')->group(function () {
             ->latest()
             ->first();
 
+        $relayCount = 0;
+        $history = SensorData::where('user_id', $resident->id)->orderBy('created_at')->get(['relay_status']);
+        $lastStatus = null;
+        foreach ($history as $row) {
+            $currentStatus = (int)$row->relay_status;
+            if ($lastStatus !== null && $lastStatus === 0 && $currentStatus === 1) {
+                $relayCount++;
+            }
+            $lastStatus = $currentStatus;
+        }
+        if ($history->isNotEmpty() && (int)$history->first()->relay_status === 1) {
+            $relayCount = max(1, $relayCount);
+        }
+
         return view('resident.dashboard', [
             'latestData' => $latestData,
             'sensorUsername' => $resident->username,
+            'relayCount' => $relayCount,
         ]);
     });
 
@@ -51,6 +67,23 @@ Route::middleware('auth')->group(function () {
         }
 
         $latestData = (clone $residentSensorQuery)->latest()->first();
+
+        $relayCount = 0;
+        if ($selectedResident) {
+            $relayHistory = SensorData::where('user_id', $selectedResident->id)->orderBy('created_at')->get(['relay_status']);
+            $lastStatus = null;
+            foreach ($relayHistory as $row) {
+                $currentStatus = (int)$row->relay_status;
+                if ($lastStatus !== null && $lastStatus === 0 && $currentStatus === 1) {
+                    $relayCount++;
+                }
+                $lastStatus = $currentStatus;
+            }
+            if ($relayHistory->isNotEmpty() && (int)$relayHistory->first()->relay_status === 1) {
+                $relayCount = max(1, $relayCount);
+            }
+        }
+
         $range = $request->query('range', '24h');
         $rangeOptions = [
             '24h' => ['label' => '24 Jam', 'fallback_limit' => 24],
@@ -188,7 +221,8 @@ Route::middleware('auth')->group(function () {
             'areaPath',
             'latestPoint',
             'yLabels',
-            'xLabels'
+            'xLabels',
+            'relayCount'
         ));
     });
 
