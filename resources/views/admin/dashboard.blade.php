@@ -194,6 +194,16 @@
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ __('KUALITAS') }}</span>
                             <div id="quality-val" class="text-3xl font-extrabold text-primary-dark mt-4">-</div>
+                            <div class="mt-4 pt-3 border-t border-primary/5 flex flex-col gap-1 text-[11px] font-semibold text-primary/60">
+                                <div class="flex justify-between">
+                                    <span>{{ __('Aman') }}</span>
+                                    <span class="font-mono text-green-600 bg-green-50 px-1.5 py-0.5 rounded" id="quality-safe-count">0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>{{ __('Tidak Aman') }}</span>
+                                    <span class="font-mono text-red-600 bg-red-50 px-1.5 py-0.5 rounded" id="quality-unsafe-count">0</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="flex items-end justify-between mt-8">
                             <span id="quality-desc" class="text-xs text-primary/60 font-medium">{{ __('Memuat...') }}</span>
@@ -336,6 +346,8 @@
                 let ph = '0.0';
                 let tds = '0';
                 let ntu = '0';
+                let amanCount = 0;
+                let tidakAmanCount = 0;
                 
                 if (data) {
                     const parsedPh = parseFloat(data.ph);
@@ -346,11 +358,16 @@
                     
                     const parsedTemp = parseFloat(data.temperature);
                     if (!isNaN(parsedTemp)) tds = Math.round(parsedTemp * 7);
+                    
+                    amanCount = data.aman_count || 0;
+                    tidakAmanCount = data.tidak_aman_count || 0;
                 }
                 
                 document.getElementById('ph-val').innerText = ph;
                 document.getElementById('tds-val').innerText = tds;
                 document.getElementById('turbidity-val').innerText = ntu;
+                document.getElementById('quality-safe-count').innerText = amanCount;
+                document.getElementById('quality-unsafe-count').innerText = tidakAmanCount;
                 
                 const rawPh = data && data.ph !== null && data.ph !== undefined ? parseFloat(data.ph) : null;
                 const rawNtu = data && data.ntu !== null && data.ntu !== undefined ? parseFloat(data.ntu) : null;

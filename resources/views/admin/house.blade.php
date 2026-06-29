@@ -190,6 +190,16 @@
 <span class="text-sm text-forest/60 font-medium">{{ __('Keadaan Relay') }}</span>
 <div id="card-relay-val" class="text-3xl font-mono font-bold text-forest-dark mt-1">{{ isset($latestData) && $latestData->relay_status ? 'ON' : 'OFF' }}</div>
 <div class="text-[11px] font-semibold text-forest/50 uppercase mt-1">{{ __('Aktivasi:') }} <span id="card-relay-count" class="font-mono font-bold text-forest-dark">{{ $relayCount ?? 0 }}</span> {{ __('Kali') }}</div>
+<div class="w-full mt-3 pt-3 border-t border-dashed border-forest/10 flex flex-col gap-1 text-[11px] font-semibold text-forest/60">
+    <div class="flex justify-between w-full">
+        <span>{{ __('Aman') }}</span>
+        <span class="font-mono text-green-650 bg-green-50/50 px-1.5 py-0.5 rounded" id="card-safe-count">{{ $safeCount ?? 0 }}</span>
+    </div>
+    <div class="flex justify-between w-full">
+        <span>{{ __('Tidak Aman') }}</span>
+        <span class="font-mono text-red-650 bg-red-50/50 px-1.5 py-0.5 rounded" id="card-unsafe-count">{{ $unsafeCount ?? 0 }}</span>
+    </div>
+</div>
 </div>
 </div>
 </div>
@@ -394,6 +404,14 @@
                     const cardRelayCount = document.getElementById('card-relay-count');
                     if (cardRelayCount && latest.relay_count !== undefined) {
                         cardRelayCount.innerText = latest.relay_count;
+                    }
+                    const cardSafeCount = document.getElementById('card-safe-count');
+                    if (cardSafeCount && latest.aman_count !== undefined) {
+                        cardSafeCount.innerText = latest.aman_count;
+                    }
+                    const cardUnsafeCount = document.getElementById('card-unsafe-count');
+                    if (cardUnsafeCount && latest.tidak_aman_count !== undefined) {
+                        cardUnsafeCount.innerText = latest.tidak_aman_count;
                     }
                 }
 

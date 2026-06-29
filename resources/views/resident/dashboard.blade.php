@@ -164,6 +164,16 @@
 </div>
 <span id="relay-status" class="text-xs font-mono font-bold {{ isset($latestData) && $latestData->relay_status ? 'text-green-700 bg-green-100 border-green-200' : 'text-red-700 bg-red-100 border-red-200' }} px-3 py-1 rounded-lg border">RELAY: {{ isset($latestData) && $latestData->relay_status ? __('MENYALA') : __('MATI') }}</span>
 <span class="text-[11px] font-semibold text-text/50 uppercase mt-1">{{ __('Aktivasi') }}: <span id="relay-count" class="font-mono font-bold text-primary">{{ $relayCount ?? 0 }}</span> {{ __('Kali') }}</span>
+<div class="w-full mt-3 pt-3 border-t border-dashed border-text/10 flex flex-col gap-1.5 text-[11px] font-semibold text-text/60">
+    <div class="flex justify-between w-full">
+        <span>{{ __('Aman') }}</span>
+        <span class="font-mono text-green-600 bg-green-50 px-1.5 py-0.5 rounded" id="safe-count">{{ $safeCount ?? 0 }}</span>
+    </div>
+    <div class="flex justify-between w-full">
+        <span>{{ __('Tidak Aman') }}</span>
+        <span class="font-mono text-red-600 bg-red-50 px-1.5 py-0.5 rounded" id="unsafe-count">{{ $unsafeCount ?? 0 }}</span>
+    </div>
+</div>
 </div>
 </div>
 </div>
@@ -280,32 +290,6 @@
 </main>
 </div>
 <script>
-    function updateData() {
-        fetch('/api/latest-sensor-data?username={{ urlencode($sensorUsername ?? Auth::user()->username ?? '') }}')
-            .then(response => response.json())
-            .then(data => {
-                let phValue = 0;
-                let ntuValue = 0;
-                let tempValue = 0;
-                let relayStatus = false;
-                
-                if (data) {
-                    const parsedPh = parseFloat(data.ph);
-                    if (!isNaN(parsedPh)) phValue = parsedPh;
-                    
-                    const parsedNtu = parseFloat(data.ntu);
-                    if (!isNaN(parsedNtu)) ntuValue = parsedNtu;
-                    
-                    const parsedTemp = parseFloat(data.temperature);
-                    if (!isNaN(parsedTemp)) tempValue = parsedTemp;
-                    
-                    relayStatus = !!data.relay_status;
-                }
-                
-                document.getElementById('ph-value').innerText = phValue.toFixed(1);
-                document.getElementById('ntu-value').innerText = ntuValue.toFixed(0);
-                document.getElementById('temp-value').innerHTML = tempValue.toFixed(0) + '&deg;';
-                
     const translations = {
         statusNormal: "{{ __('Status Normal') }}",
         statusAbnormal: "{{ __('Status Tidak Normal') }}",
@@ -400,6 +384,14 @@
                 const relayCountEl = document.getElementById('relay-count');
                 if (relayCountEl && data && data.relay_count !== undefined) {
                     relayCountEl.innerText = data.relay_count;
+                }
+                const safeCountEl = document.getElementById('safe-count');
+                if (safeCountEl && data && data.aman_count !== undefined) {
+                    safeCountEl.innerText = data.aman_count;
+                }
+                const unsafeCountEl = document.getElementById('unsafe-count');
+                if (unsafeCountEl && data && data.tidak_aman_count !== undefined) {
+                    unsafeCountEl.innerText = data.tidak_aman_count;
                 }
             })
             .catch(error => {

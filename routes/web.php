@@ -26,14 +26,42 @@ Route::middleware('auth')->group(function () {
             ->first();
 
         $relayCount = 0;
-        $history = SensorData::where('user_id', $resident->id)->orderBy('created_at')->get(['relay_status']);
+        $safeCount = 0;
+        $unsafeCount = 0;
+
+        $history = SensorData::where('user_id', $resident->id)->orderBy('created_at')->get(['ph', 'ntu', 'relay_status']);
         $lastStatus = null;
+        $lastQualityState = null;
+
         foreach ($history as $row) {
             $currentStatus = (int)$row->relay_status;
             if ($lastStatus !== null && $lastStatus === 0 && $currentStatus === 1) {
                 $relayCount++;
             }
             $lastStatus = $currentStatus;
+
+            $phVal = $row->ph !== null ? (float)$row->ph : null;
+            $ntuVal = $row->ntu !== null ? (float)$row->ntu : null;
+
+            if ($phVal !== null && $ntuVal !== null) {
+                $isAman = ($phVal >= 6.5 && $phVal <= 8.5 && $ntuVal <= 5);
+                $currentQualityState = $isAman ? 'aman' : 'tidak_aman';
+
+                if ($lastQualityState !== null) {
+                    if ($lastQualityState === 'tidak_aman' && $currentQualityState === 'aman') {
+                        $safeCount++;
+                    } elseif ($lastQualityState === 'aman' && $currentQualityState === 'tidak_aman') {
+                        $unsafeCount++;
+                    }
+                } else {
+                    if ($currentQualityState === 'aman') {
+                        $safeCount = 1;
+                    } else {
+                        $unsafeCount = 1;
+                    }
+                }
+                $lastQualityState = $currentQualityState;
+            }
         }
         if ($history->isNotEmpty() && (int)$history->first()->relay_status === 1) {
             $relayCount = max(1, $relayCount);
@@ -43,6 +71,8 @@ Route::middleware('auth')->group(function () {
             'latestData' => $latestData,
             'sensorUsername' => $resident->username,
             'relayCount' => $relayCount,
+            'safeCount' => $safeCount,
+            'unsafeCount' => $unsafeCount,
         ]);
     });
 
@@ -75,15 +105,41 @@ Route::middleware('auth')->group(function () {
         $latestData = (clone $residentSensorQuery)->latest()->first();
 
         $relayCount = 0;
+        $safeCount = 0;
+        $unsafeCount = 0;
         if ($selectedResident) {
-            $relayHistory = SensorData::where('user_id', $selectedResident->id)->orderBy('created_at')->get(['relay_status']);
+            $relayHistory = SensorData::where('user_id', $selectedResident->id)->orderBy('created_at')->get(['ph', 'ntu', 'relay_status']);
             $lastStatus = null;
+            $lastQualityState = null;
             foreach ($relayHistory as $row) {
                 $currentStatus = (int)$row->relay_status;
                 if ($lastStatus !== null && $lastStatus === 0 && $currentStatus === 1) {
                     $relayCount++;
                 }
                 $lastStatus = $currentStatus;
+
+                $phVal = $row->ph !== null ? (float)$row->ph : null;
+                $ntuVal = $row->ntu !== null ? (float)$row->ntu : null;
+
+                if ($phVal !== null && $ntuVal !== null) {
+                    $isAman = ($phVal >= 6.5 && $phVal <= 8.5 && $ntuVal <= 5);
+                    $currentQualityState = $isAman ? 'aman' : 'tidak_aman';
+
+                    if ($lastQualityState !== null) {
+                        if ($lastQualityState === 'tidak_aman' && $currentQualityState === 'aman') {
+                            $safeCount++;
+                        } elseif ($lastQualityState === 'aman' && $currentQualityState === 'tidak_aman') {
+                            $unsafeCount++;
+                        }
+                    } else {
+                        if ($currentQualityState === 'aman') {
+                            $safeCount = 1;
+                        } else {
+                            $unsafeCount = 1;
+                        }
+                    }
+                    $lastQualityState = $currentQualityState;
+                }
             }
             if ($relayHistory->isNotEmpty() && (int)$relayHistory->first()->relay_status === 1) {
                 $relayCount = max(1, $relayCount);
@@ -228,7 +284,9 @@ Route::middleware('auth')->group(function () {
             'latestPoint',
             'yLabels',
             'xLabels',
-            'relayCount'
+            'relayCount',
+            'safeCount',
+            'unsafeCount'
         ));
     });
 
