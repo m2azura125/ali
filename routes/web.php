@@ -293,4 +293,48 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/settings', function () {
         return view('admin.settings');
     });
+
+    Route::post('/admin/clear-data', function (Request $request) {
+        // Only allow RT (admin) role
+        if (auth()->user()->role !== 'rt') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $query = SensorData::query();
+
+        // Filter by username if provided
+        if ($request->filled('username') && $request->username !== 'all') {
+            $identity = strtolower((string) $request->username);
+            $residentId = User::query()
+                ->where('role', 'warga')
+                ->where(function ($q) use ($identity) {
+                    $q->whereRaw('LOWER(username) = ?', [$identity])
+                      ->orWhereRaw('LOWER(name) = ?', [$identity]);
+                })
+                ->value('id');
+
+            if ($residentId) {
+                $query->where('user_id', $residentId);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Warga tidak ditemukan'], 404);
+            }
+        }
+
+        // Filter by date range if provided
+        if ($request->filled('date_from')) {
+            $query->where('created_at', '>=', $request->date_from . ' 00:00:00');
+        }
+        if ($request->filled('date_to')) {
+            $query->where('created_at', '<=', $request->date_to . ' 23:59:59');
+        }
+
+        $deletedCount = $query->count();
+        $query->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil menghapus {$deletedCount} data sensor.",
+            'deleted_count' => $deletedCount,
+        ]);
+    });
 });

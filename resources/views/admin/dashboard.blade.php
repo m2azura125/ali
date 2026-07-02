@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Smart Water Filtration System - Admin Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_Politeknik_Negeri_Balikpapan.svg">
     
@@ -264,9 +265,93 @@
                     </div>
                 </div>
 
+                <!-- Row 4: Clear Data Section -->
+                <div class="bg-white rounded-xl p-6 shadow-soft border border-red-100 relative overflow-hidden mt-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 border-b border-red-100 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-500">
+                                <span class="material-symbols-outlined text-xl">delete_sweep</span>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-lg font-bold text-primary-dark">{{ __('Kelola Data Sensor') }}</h3>
+                                <p class="text-primary/60 text-xs mt-0.5">{{ __('Hapus data sensor berdasarkan periode atau hapus semua') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <!-- Pilih Warga -->
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-primary/70 uppercase tracking-wider">{{ __('Warga') }}</label>
+                            <select id="clear-username" class="rounded-lg border border-primary/15 bg-amber-50/30 px-3 py-2.5 text-sm font-semibold text-primary-dark focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
+                                <option value="all">{{ __('Semua Warga') }}</option>
+                                @foreach($residents as $res)
+                                    <option value="{{ $res->username }}">{{ $res->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Dari Tanggal -->
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-primary/70 uppercase tracking-wider">{{ __('Dari Tanggal') }}</label>
+                            <input type="date" id="clear-date-from" class="rounded-lg border border-primary/15 bg-amber-50/30 px-3 py-2.5 text-sm font-semibold text-primary-dark focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
+                        </div>
+
+                        <!-- Sampai Tanggal -->
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-primary/70 uppercase tracking-wider">{{ __('Sampai Tanggal') }}</label>
+                            <input type="date" id="clear-date-to" class="rounded-lg border border-primary/15 bg-amber-50/30 px-3 py-2.5 text-sm font-semibold text-primary-dark focus:ring-2 focus:ring-primary/20 focus:border-primary/30">
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex flex-col gap-2">
+                            <button onclick="showDeleteConfirm(false)" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg text-xs font-bold shadow-md transition-all shadow-red-500/20 hover:shadow-red-500/40 active:scale-[0.97]">
+                                <span class="material-symbols-outlined text-sm">delete</span>{{ __('Hapus Periode') }}
+                            </button>
+                            <button onclick="showDeleteConfirm(true)" class="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-700 hover:bg-red-800 text-white rounded-lg text-xs font-bold shadow-md transition-all shadow-red-700/20 hover:shadow-red-700/40 active:scale-[0.97]">
+                                <span class="material-symbols-outlined text-sm">delete_forever</span>{{ __('Hapus Semua Data') }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Feedback message -->
+                    <div id="clear-feedback" class="hidden mt-4 px-4 py-3 rounded-lg text-sm font-bold flex items-center gap-2"></div>
+                </div>
+
             </div>
         </div>
     </main>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-2xl shadow-deep max-w-md w-full mx-4 overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+        <div class="p-6 border-b border-red-100 bg-red-50/50">
+            <div class="flex items-center gap-3">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-red-600">
+                    <span class="material-symbols-outlined text-2xl">warning</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-red-700">{{ __('Konfirmasi Hapus Data') }}</h3>
+                    <p class="text-sm text-red-600/70">{{ __('Tindakan ini tidak bisa dibatalkan') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-6">
+            <p id="delete-modal-message" class="text-sm text-primary-dark leading-relaxed mb-6"></p>
+            <div class="flex gap-3 justify-end">
+                <button onclick="hideDeleteConfirm()" class="px-5 py-2.5 rounded-lg border border-primary/15 text-primary-dark text-sm font-bold hover:bg-gray-50 transition-colors">
+                    {{ __('Batal') }}
+                </button>
+                <button id="delete-confirm-btn" onclick="executeDelete()" class="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-bold shadow-md shadow-red-600/20 transition-all active:scale-[0.97]">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">delete_forever</span>
+                        {{ __('Ya, Hapus') }}
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -601,6 +686,111 @@
             }
         }, 1000);
     });
+
+    // ===== Clear Data Functions =====
+    const clearDataUrl = "{{ url('/admin/clear-data') }}";
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    let pendingDeleteAll = false;
+
+    function showDeleteConfirm(deleteAll) {
+        pendingDeleteAll = deleteAll;
+        const modal = document.getElementById('delete-modal');
+        const msgEl = document.getElementById('delete-modal-message');
+
+        const username = document.getElementById('clear-username').value;
+        const dateFrom = document.getElementById('clear-date-from').value;
+        const dateTo = document.getElementById('clear-date-to').value;
+
+        let msg = '';
+        if (deleteAll) {
+            const wargaText = username === 'all' ? '{{ __("semua warga") }}' : document.getElementById('clear-username').selectedOptions[0].text;
+            msg = `{{ __("Anda akan menghapus SEMUA data sensor untuk") }} ${wargaText}. {{ __("Data yang dihapus tidak bisa dikembalikan.") }}`;
+        } else {
+            const wargaText = username === 'all' ? '{{ __("semua warga") }}' : document.getElementById('clear-username').selectedOptions[0].text;
+            let periodeText = '';
+            if (dateFrom && dateTo) {
+                periodeText = `{{ __("dari") }} ${dateFrom} {{ __("sampai") }} ${dateTo}`;
+            } else if (dateFrom) {
+                periodeText = `{{ __("dari") }} ${dateFrom}`;
+            } else if (dateTo) {
+                periodeText = `{{ __("sampai") }} ${dateTo}`;
+            } else {
+                periodeText = '{{ __("semua periode") }}';
+            }
+            msg = `{{ __("Anda akan menghapus data sensor untuk") }} ${wargaText} ${periodeText}. {{ __("Data yang dihapus tidak bisa dikembalikan.") }}`;
+        }
+
+        msgEl.innerText = msg;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function hideDeleteConfirm() {
+        const modal = document.getElementById('delete-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function showFeedback(message, isSuccess) {
+        const fb = document.getElementById('clear-feedback');
+        fb.classList.remove('hidden');
+        fb.className = `mt-4 px-4 py-3 rounded-lg text-sm font-bold flex items-center gap-2 ${
+            isSuccess ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+        }`;
+        fb.innerHTML = `<span class="material-symbols-outlined text-lg">${isSuccess ? 'check_circle' : 'error'}</span>${message}`;
+        setTimeout(() => { fb.classList.add('hidden'); }, 5000);
+    }
+
+    function executeDelete() {
+        const btn = document.getElementById('delete-confirm-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm animate-spin">progress_activity</span>{{ __("Menghapus...") }}</span>';
+
+        const body = {};
+
+        if (pendingDeleteAll) {
+            body.username = document.getElementById('clear-username').value;
+        } else {
+            body.username = document.getElementById('clear-username').value;
+            const dateFrom = document.getElementById('clear-date-from').value;
+            const dateTo = document.getElementById('clear-date-to').value;
+            if (dateFrom) body.date_from = dateFrom;
+            if (dateTo) body.date_to = dateTo;
+        }
+
+        fetch(clearDataUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(body)
+        })
+        .then(r => r.json())
+        .then(data => {
+            hideDeleteConfirm();
+            if (data.success) {
+                showFeedback(data.message, true);
+                // Refresh all dashboard data
+                previousDataIds = [];
+                updateDashboardMetrics();
+                loadSensorHistory();
+                loadChartData();
+            } else {
+                showFeedback(data.message || '{{ __("Gagal menghapus data.") }}', false);
+            }
+        })
+        .catch(err => {
+            hideDeleteConfirm();
+            showFeedback('{{ __("Terjadi kesalahan jaringan.") }}', false);
+            console.error('Delete error:', err);
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">delete_forever</span>{{ __("Ya, Hapus") }}</span>';
+        });
+    }
 </script>
 </body>
 </html>
