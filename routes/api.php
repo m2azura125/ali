@@ -123,6 +123,7 @@ Route::get('/latest-sensor-data', function (Request $request) {
         }
         
         $latestDataArray = $latestData->toArray();
+        $latestDataArray['created_at'] = $latestData->created_at->setTimezone('Asia/Makassar')->toDateTimeString();
         $latestDataArray['relay_count'] = $relayCount;
         $latestDataArray['aman_count'] = $amanCount;
         $latestDataArray['tidak_aman_count'] = $tidakAmanCount;
@@ -156,6 +157,11 @@ Route::get('/sensor-history', function (Request $request) {
     }
 
     $records = $query->latest()->take($limit)->get();
+    // Convert timestamps to Asia/Makassar timezone
+    $records->transform(function ($record) {
+        $record->created_at = $record->created_at->setTimezone('Asia/Makassar');
+        return $record;
+    });
     if ($records->isNotEmpty()) {
         $firstRecord = $records->first();
         $history = SensorData::query()
@@ -252,7 +258,7 @@ Route::get('/chart-data', function (Request $request) {
         $records = $query->latest()->take($limit)->get(['ph', 'ntu', 'temperature', 'relay_status', 'created_at'])->reverse()->values();
     }
 
-    $labels = $records->map(fn($r) => $r->created_at->format('d M H:i'));
+    $labels = $records->map(fn($r) => $r->created_at->setTimezone('Asia/Makassar')->format('d M H:i'));
     $phData = $records->map(fn($r) => round((float) $r->ph, 2));
     $ntuData = $records->map(fn($r) => round((float) $r->ntu, 2));
     $tempData = $records->map(fn($r) => round((float) $r->temperature, 2));
