@@ -123,7 +123,7 @@
                     </div>
                     <div class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-primary/10 shadow-soft">
                         <span class="material-symbols-outlined text-primary text-xl">home_pin</span>
-                        <label for="resident-select" class="text-sm font-bold text-primary-dark">{{ __('Pilih Rumah:') }}</label>
+                        <label for="resident-select" class="text-sm font-bold text-primary-dark">{{ __('Pilih Proyek:') }}</label>
                         <select id="resident-select" class="rounded-lg border-0 bg-transparent py-1 pl-1 pr-8 text-sm font-bold text-primary focus:ring-0 cursor-pointer">
                             @foreach($residents as $res)
                                 <option value="{{ $res->username }}" {{ $loop->first ? 'selected' : '' }}>
