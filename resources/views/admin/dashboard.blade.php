@@ -127,7 +127,7 @@
                         <select id="resident-select" class="rounded-lg border-0 bg-transparent py-1 pl-1 pr-8 text-sm font-bold text-primary focus:ring-0 cursor-pointer">
                             @foreach($residents as $res)
                                 <option value="{{ $res->username }}" {{ $loop->first ? 'selected' : '' }}>
-                                    {{ $res->name }} (Blok {{ match($res->username) { 'krisna' => 'K-01', 'siti' => 'A-05', 'rahman' => 'B-02', default => strtoupper($res->username) } }})
+                                    {{ $res->name }}  {{ match($res->username) { 'krisna' => '', 'siti' => 'A-05', 'rahman' => 'B-02', default => strtoupper($res->username) } }}
                                 </option>
                             @endforeach
                         </select>
