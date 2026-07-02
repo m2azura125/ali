@@ -82,7 +82,7 @@
 
 <main class="flex-1 p-6 md:p-12 lg:p-16 flex flex-col gap-10">
 @php
-    $hour = date('H');
+    $hour = \Carbon\Carbon::now('Asia/Makassar')->format('H');
     if ($hour >= 5 && $hour < 11) {
         $greeting = 'Selamat Pagi';
     } elseif ($hour >= 11 && $hour < 15) {
