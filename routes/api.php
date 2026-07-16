@@ -236,7 +236,9 @@ Route::get('/chart-data', function (Request $request) {
 
     $timeQuery = clone $query;
 
-    if ($range === '24h') {
+    if ($range === '1h') {
+        $timeQuery->where('created_at', '>=', now()->subHour());
+    } elseif ($range === '24h') {
         $timeQuery->where('created_at', '>=', now()->subDay());
     } elseif ($range === '7d') {
         $timeQuery->where('created_at', '>=', now()->subDays(7));
@@ -245,10 +247,10 @@ Route::get('/chart-data', function (Request $request) {
     }
 
     $records = $timeQuery->orderBy('created_at', 'asc')->get(['ph', 'ntu', 'temperature', 'relay_status', 'created_at']);
-    
+
     // Fallback if empty
     if ($records->isEmpty()) {
-        $limit = $range === '24h' ? 24 : ($range === '7d' ? 28 : 30);
+        $limit = $range === '1h' ? 12 : ($range === '24h' ? 24 : ($range === '7d' ? 28 : 30));
         $records = $query->latest()->take($limit)->get(['ph', 'ntu', 'temperature', 'relay_status', 'created_at'])->reverse()->values();
     }
 

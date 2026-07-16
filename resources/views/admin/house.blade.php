@@ -119,6 +119,7 @@
 <p class="text-forest/60 text-sm mt-1">{{ __('Grafik pH, Kekeruhan, dan Suhu berdasarkan data tersimpan') }}</p>
 </div>
 <div class="bg-mist p-1 rounded-lg flex items-center" id="chart-filters">
+<button onclick="setChartRange('1h')" id="btn-filter-1h" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">{{ __('1 Jam') }}</button>
 <button onclick="setChartRange('24h')" id="btn-filter-24h" class="px-4 py-2 rounded-lg text-sm transition-all bg-white text-forest-dark shadow-sm font-semibold">{{ __('24 Jam') }}</button>
 <button onclick="setChartRange('7d')" id="btn-filter-7d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">{{ __('7 Hari') }}</button>
 <button onclick="setChartRange('30d')" id="btn-filter-30d" class="px-4 py-2 rounded-lg text-sm transition-all hover:bg-white/50 text-forest/70 font-medium">{{ __('30 Hari') }}</button>
@@ -576,7 +577,7 @@
         currentRange = range;
         
         // Update filter buttons styling
-        const ranges = ['24h', '7d', '30d'];
+        const ranges = ['1h', '24h', '7d', '30d'];
         ranges.forEach(r => {
             const btn = document.getElementById('btn-filter-' + r);
             if (r === range) {

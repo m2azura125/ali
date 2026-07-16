@@ -84,6 +84,31 @@ Route::middleware('auth')->group(function () {
         return view('admin.dashboard', compact('residents'));
     });
 
+    Route::post('/admin/residents', function (Request $request) {
+        if (auth()->user()->role !== 'rt') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|alpha_dash|unique:users,username',
+            'pin' => 'required|string|min:4|max:20',
+        ]);
+
+        $resident = User::create([
+            'name' => $validated['name'],
+            'username' => strtolower($validated['username']),
+            'role' => 'warga',
+            'password' => $validated['pin'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Warga '{$resident->name}' berhasil ditambahkan.",
+            'resident' => $resident->only(['id', 'name', 'username']),
+        ]);
+    });
+
     Route::get('/admin/house/{id}', function (Request $request, $id) {
         $selectedResident = User::query()
             ->where('role', 'warga')

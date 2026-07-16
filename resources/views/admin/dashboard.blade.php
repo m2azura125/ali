@@ -121,16 +121,21 @@
                     <div>
                         <h2 class="font-serif text-3xl font-bold text-primary-dark md:text-4xl">{{ __('Dashboard') }}</h2>
                     </div>
-                    <div class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-primary/10 shadow-soft">
-                        <span class="material-symbols-outlined text-primary text-xl">home_pin</span>
-                        <label for="resident-select" class="text-sm font-bold text-primary-dark">{{ __('Pilih Proyek:') }}</label>
-                        <select id="resident-select" class="rounded-lg border-0 bg-transparent py-1 pl-1 pr-8 text-sm font-bold text-primary focus:ring-0 cursor-pointer">
-                            @foreach($residents as $res)
-                                <option value="{{ $res->username }}" {{ $loop->first ? 'selected' : '' }}>
-                                    {{ $res->name }}  {{ match($res->username) { 'krisna' => '', 'siti' => 'A-05', 'rahman' => 'B-02', default => strtoupper($res->username) } }}
-                                </option>
-                            @endforeach
-                        </select>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-primary/10 shadow-soft">
+                            <span class="material-symbols-outlined text-primary text-xl">home_pin</span>
+                            <label for="resident-select" class="text-sm font-bold text-primary-dark">{{ __('Pilih Proyek:') }}</label>
+                            <select id="resident-select" class="rounded-lg border-0 bg-transparent py-1 pl-1 pr-8 text-sm font-bold text-primary focus:ring-0 cursor-pointer">
+                                @foreach($residents as $res)
+                                    <option value="{{ $res->username }}" {{ $loop->first ? 'selected' : '' }}>
+                                        {{ $res->name }}  {{ match($res->username) { 'krisna' => '', 'siti' => 'A-05', 'rahman' => 'B-02', default => strtoupper($res->username) } }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button onclick="showAddResidentModal()" class="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary-light text-white rounded-xl text-sm font-bold shadow-soft transition-all active:scale-[0.97]">
+                            <span class="material-symbols-outlined text-lg">person_add</span>{{ __('Tambah Warga') }}
+                        </button>
                     </div>
                 </div>
 
@@ -180,6 +185,7 @@
                                 <p class="text-xs text-primary/60">{{ __('Grafik pH, Kekeruhan, dan Suhu berdasarkan data tersimpan') }}</p>
                             </div>
                             <div class="flex items-center gap-1 bg-amber-50 p-1 rounded-lg border border-primary/10" id="chart-filters">
+                                <button onclick="setChartRange('1h')" id="btn-1h" class="px-3 py-1.5 rounded-md text-xs font-medium text-primary/70 hover:text-primary transition-all">{{ __('1 Jam') }}</button>
                                 <button onclick="setChartRange('24h')" id="btn-24h" class="px-3 py-1.5 rounded-md text-xs font-bold bg-white text-primary shadow-sm transition-all">{{ __('24 Jam') }}</button>
                                 <button onclick="setChartRange('7d')" id="btn-7d" class="px-3 py-1.5 rounded-md text-xs font-medium text-primary/70 hover:text-primary transition-all">{{ __('7 Hari') }}</button>
                                 <button onclick="setChartRange('30d')" id="btn-30d" class="px-3 py-1.5 rounded-md text-xs font-medium text-primary/70 hover:text-primary transition-all">{{ __('30 Hari') }}</button>
@@ -321,6 +327,51 @@
             </div>
         </div>
     </main>
+</div>
+
+<!-- Add Resident Modal -->
+<div id="add-resident-modal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-2xl shadow-deep max-w-md w-full mx-4 overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+        <div class="p-6 border-b border-primary/10 bg-amber-50/50">
+            <div class="flex items-center gap-3">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <span class="material-symbols-outlined text-2xl">person_add</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-primary-dark">{{ __('Tambah Warga Baru') }}</h3>
+                    <p class="text-sm text-primary/60">{{ __('Buat akun warga untuk memantau titik air baru') }}</p>
+                </div>
+            </div>
+        </div>
+        <form id="add-resident-form" class="p-6" onsubmit="return submitAddResident(event)">
+            <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-primary/70 uppercase tracking-wider">{{ __('Nama') }}</label>
+                    <input type="text" id="resident-name" required class="rounded-lg border border-primary/15 bg-amber-50/30 px-3 py-2.5 text-sm font-semibold text-primary-dark focus:ring-2 focus:ring-primary/20 focus:border-primary/30" placeholder="{{ __('Contoh: Sumur Warga Jl Baru') }}">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-primary/70 uppercase tracking-wider">{{ __('Username') }}</label>
+                    <input type="text" id="resident-username" required pattern="[A-Za-z0-9_-]+" class="rounded-lg border border-primary/15 bg-amber-50/30 px-3 py-2.5 text-sm font-semibold text-primary-dark focus:ring-2 focus:ring-primary/20 focus:border-primary/30" placeholder="{{ __('Contoh: jlbaru') }}">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-bold text-primary/70 uppercase tracking-wider">{{ __('PIN Login') }}</label>
+                    <input type="text" id="resident-pin" required minlength="4" class="rounded-lg border border-primary/15 bg-amber-50/30 px-3 py-2.5 text-sm font-semibold text-primary-dark focus:ring-2 focus:ring-primary/20 focus:border-primary/30" placeholder="{{ __('Minimal 4 karakter') }}">
+                </div>
+            </div>
+            <div id="add-resident-feedback" class="hidden mt-4 px-4 py-3 rounded-lg text-sm font-bold flex items-center gap-2"></div>
+            <div class="flex gap-3 justify-end mt-6">
+                <button type="button" onclick="hideAddResidentModal()" class="px-5 py-2.5 rounded-lg border border-primary/15 text-primary-dark text-sm font-bold hover:bg-gray-50 transition-colors">
+                    {{ __('Batal') }}
+                </button>
+                <button type="submit" id="add-resident-submit-btn" class="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-light text-white text-sm font-bold shadow-md shadow-primary/20 transition-all active:scale-[0.97]">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                        {{ __('Simpan Warga') }}
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -580,7 +631,7 @@
                         position: 'left',
                         title: {
                             display: true,
-                            text: '{{ __("Nilai") }}',
+                            text: '{{ __("Nominal") }}',
                             font: { weight: 'bold', size: 11 }
                         },
                         beginAtZero: true,
@@ -621,7 +672,7 @@
     function loadChartData(range = currentRange) {
         currentRange = range;
         
-        const ranges = ['24h', '7d', '30d'];
+        const ranges = ['1h', '24h', '7d', '30d'];
         ranges.forEach(r => {
             const btn = document.getElementById('btn-' + r);
             if (btn) {
@@ -790,6 +841,72 @@
             btn.disabled = false;
             btn.innerHTML = '<span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">delete_forever</span>{{ __("Ya, Hapus") }}</span>';
         });
+    }
+
+    // ===== Add Resident Functions =====
+    const addResidentUrl = "{{ url('/admin/residents') }}";
+
+    function showAddResidentModal() {
+        document.getElementById('add-resident-form').reset();
+        document.getElementById('add-resident-feedback').classList.add('hidden');
+        const modal = document.getElementById('add-resident-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function hideAddResidentModal() {
+        const modal = document.getElementById('add-resident-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function showAddResidentFeedback(message, isSuccess) {
+        const fb = document.getElementById('add-resident-feedback');
+        fb.classList.remove('hidden');
+        fb.className = `mt-4 px-4 py-3 rounded-lg text-sm font-bold flex items-center gap-2 ${
+            isSuccess ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+        }`;
+        fb.innerHTML = `<span class="material-symbols-outlined text-lg">${isSuccess ? 'check_circle' : 'error'}</span>${message}`;
+    }
+
+    function submitAddResident(event) {
+        event.preventDefault();
+        const btn = document.getElementById('add-resident-submit-btn');
+        btn.disabled = true;
+
+        const body = {
+            name: document.getElementById('resident-name').value,
+            username: document.getElementById('resident-username').value,
+            pin: document.getElementById('resident-pin').value,
+        };
+
+        fetch(addResidentUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(body)
+        })
+        .then(async r => {
+            const data = await r.json();
+            if (r.ok && data.success) {
+                showAddResidentFeedback(data.message, true);
+                setTimeout(() => window.location.reload(), 900);
+            } else {
+                const message = data.message || (data.errors ? Object.values(data.errors).flat().join(' ') : '{{ __("Gagal menambahkan warga.") }}');
+                showAddResidentFeedback(message, false);
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            showAddResidentFeedback('{{ __("Terjadi kesalahan jaringan.") }}', false);
+            console.error('Add resident error:', err);
+            btn.disabled = false;
+        });
+
+        return false;
     }
 </script>
 </body>
