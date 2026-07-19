@@ -250,12 +250,13 @@
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">PH</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('SUHU') }}</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('KEKERUHAN') }}</th>
+                                    <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('STATUS') }}</th>
                                     <th class="px-5 py-4 text-xs font-bold uppercase tracking-wider text-primary/60">{{ __('KUALITAS') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="sensor-history-body">
                                 <tr>
-                                    <td colspan="6" class="px-5 py-12 text-center text-primary/40">
+                                    <td colspan="7" class="px-5 py-12 text-center text-primary/40">
                                         <div class="flex flex-col items-center gap-3">
                                             <span class="material-symbols-outlined text-[40px] text-primary animate-pulse">sensors</span>
                                             <span class="text-sm font-medium">{{ __('Memuat data sensor...') }}</span>
@@ -437,15 +438,15 @@
         const ntuVal = parseFloat(ntu);
         
         const isPhNormal = phVal >= 6.5 && phVal <= 8.5;
-        const isNtuNormal = ntuVal <= 5;
+        const isNtuAman = ntuVal <= 1;
         
-        if (isPhNormal && isNtuNormal) {
+        if (isPhNormal && isNtuAman) {
             return { 
                 status: translations.good, 
                 class: 'text-green-600 bg-green-50 border-green-200',
                 desc: translations.descGood 
             };
-        } else if (phVal >= 5.0 && phVal <= 9.0 && ntuVal <= 25) {
+        } else if (phVal >= 5.0 && phVal <= 9.0 && ntuVal <= 3) {
             return { 
                 status: translations.moderate, 
                 class: 'text-yellow-600 bg-yellow-50 border-yellow-200', 
@@ -460,19 +461,40 @@
         }
     }
 
+    function getKeKeruhanStatus(ntu) {
+        if (ntu === null || ntu === undefined || isNaN(parseFloat(ntu))) {
+            return { label: 'N/A', class: 'text-gray-500 bg-gray-50 border-gray-100' };
+        }
+        const ntuVal = parseFloat(ntu);
+        if (ntuVal <= 1) {
+            return { label: '{{ __("Aman") }}', class: 'text-green-600 bg-green-50 border-green-200' };
+        } else if (ntuVal <= 3) {
+            return { label: '{{ __("Normal") }}', class: 'text-yellow-600 bg-yellow-50 border-yellow-200' };
+        } else {
+            return { label: '{{ __("Tidak Aman") }}', class: 'text-red-600 bg-red-50 border-red-200' };
+        }
+    }
+
     function formatTime(dateStr) {
         if (!dateStr) return '-';
-        const d = new Date(dateStr);
+        // If dateStr has no timezone info, treat it as Asia/Makassar (GMT+8)
+        let d;
+        if (dateStr.includes('T') || dateStr.includes('+') || dateStr.includes('Z')) {
+            d = new Date(dateStr);
+        } else {
+            // "YYYY-MM-DD HH:mm:ss" format - append timezone offset
+            d = new Date(dateStr.replace(' ', 'T') + '+08:00');
+        }
         
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        
-        const hours = String(d.getHours()).padStart(2, '0');
-        const minutes = String(d.getMinutes()).padStart(2, '0');
-        const seconds = String(d.getSeconds()).padStart(2, '0');
-        
-        return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+        const options = { 
+            timeZone: 'Asia/Makassar',
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+            hour12: false
+        };
+        const parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(d);
+        const get = (type) => (parts.find(p => p.type === type) || {}).value || '';
+        return `${get('day')}-${get('month')}-${get('year')} ${get('hour')}:${get('minute')}:${get('second')}`;
     }
 
     function updateDashboardMetrics() {
@@ -537,7 +559,7 @@
             .then(records => {
                 const tbody = document.getElementById('sensor-history-body');
                 if (!records || records.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-12 text-center text-primary/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-primary/50">sensors_off</span><span class="text-sm font-medium">' + translations.noSensorData + '</span></div></td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="px-5 py-12 text-center text-primary/40"><div class="flex flex-col items-center gap-3"><span class="material-symbols-outlined text-[40px] text-primary/50">sensors_off</span><span class="text-sm font-medium">' + translations.noSensorData + '</span></div></td></tr>';
                     document.getElementById('total-records').innerText = translations.showing + ' 0 ' + translations.data;
                     return;
                 }
@@ -551,6 +573,7 @@
                     const suhuVal = rec.temperature !== null ? parseFloat(rec.temperature).toFixed(1) + '°C' : '-';
                     
                     const q = getWaterQuality(rec.ph, rec.ntu);
+                    const ks = getKeKeruhanStatus(rec.ntu);
                     
                     html += `<tr class="${isNew ? 'animate-[fadeHighlight_0.8s_ease-out]' : ''} border-b border-primary/10 hover:bg-amber-50/20 transition-colors">`;
                     html += `<td class="px-5 py-3.5"><span class="text-xs font-mono text-primary/40">${i + 1}</span></td>`;
@@ -558,6 +581,7 @@
                     html += `<td class="px-5 py-3.5"><span class="font-mono font-bold text-primary-dark">${phVal}</span></td>`;
                     html += `<td class="px-5 py-3.5"><span class="font-mono font-bold text-primary-dark">${suhuVal}</span></td>`;
                     html += `<td class="px-5 py-3.5"><span class="font-mono font-bold text-primary-dark">${ntuVal}</span></td>`;
+                    html += `<td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${ks.class} border">${ks.label}</span></td>`;
                     html += `<td class="px-5 py-3.5"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${q.class} border">${q.status}</span></td>`;
                     html += '</tr>';
                 });

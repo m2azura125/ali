@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
             $ntuVal = $row->ntu !== null ? (float)$row->ntu : null;
 
             if ($phVal !== null && $ntuVal !== null) {
-                $isAman = ($phVal >= 6.5 && $phVal <= 8.5 && $ntuVal <= 5);
+                $isAman = ($phVal >= 6.5 && $phVal <= 8.5 && $ntuVal <= 1);
                 $currentQualityState = $isAman ? 'aman' : 'tidak_aman';
 
                 if ($lastQualityState !== null) {
@@ -147,7 +147,7 @@ Route::middleware('auth')->group(function () {
                 $ntuVal = $row->ntu !== null ? (float)$row->ntu : null;
 
                 if ($phVal !== null && $ntuVal !== null) {
-                    $isAman = ($phVal >= 6.5 && $phVal <= 8.5 && $ntuVal <= 5);
+                    $isAman = ($phVal >= 6.5 && $phVal <= 8.5 && $ntuVal <= 1);
                     $currentQualityState = $isAman ? 'aman' : 'tidak_aman';
 
                     if ($lastQualityState !== null) {

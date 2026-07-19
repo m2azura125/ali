@@ -159,8 +159,8 @@
 <div class="bg-mist rounded-2xl p-4 flex flex-col justify-between">
 <div class="flex items-start justify-between mb-2">
 <span class="material-symbols-outlined text-sand text-2xl">grain</span>
-<span id="card-ntu-status" class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 25 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
-{{ isset($latestData) && $latestData->ntu !== null ? ($latestData->ntu <= 25 ? __('Jernih') : __('Alert')) : __('Belum Ada') }}
+<span id="card-ntu-status" class="text-xs font-bold {{ isset($latestData) && $latestData->ntu !== null && $latestData->ntu <= 3 ? 'text-mint bg-mint/10' : (isset($latestData) && $latestData->ntu !== null ? 'text-sand bg-sand/10' : 'text-forest/60 bg-white') }} px-2 py-0.5 rounded-lg">
+{{ isset($latestData) && $latestData->ntu !== null ? ($latestData->ntu <= 1 ? __('Aman') : ($latestData->ntu <= 3 ? __('Normal') : __('Tidak Aman'))) : __('Belum Ada') }}
 </span>
 </div>
 <div>
@@ -273,13 +273,22 @@
 
     function formatTime(dateStr) {
         if (!dateStr) return '-';
-        const d = new Date(dateStr);
+        // If dateStr has no timezone info, treat it as Asia/Makassar (GMT+8)
+        let d;
+        if (dateStr.includes('T') || dateStr.includes('+') || dateStr.includes('Z')) {
+            d = new Date(dateStr);
+        } else {
+            d = new Date(dateStr.replace(' ', 'T') + '+08:00');
+        }
         const months = [
             "{{ __('Jan') }}", "{{ __('Feb') }}", "{{ __('Mar') }}", "{{ __('Apr') }}",
             "{{ __('Mei') }}", "{{ __('Jun') }}", "{{ __('Jul') }}", "{{ __('Agu') }}",
             "{{ __('Sep') }}", "{{ __('Okt') }}", "{{ __('Nov') }}", "{{ __('Des') }}"
         ];
-        return String(d.getDate()).padStart(2,'0') + ' ' + months[d.getMonth()] + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+        const options = { timeZone: 'Asia/Makassar', day: '2-digit', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(d);
+        const get = (type) => (parts.find(p => p.type === type) || {}).value || '';
+        return get('day') + ' ' + months[parseInt(get('month')) - 1] + ' ' + get('hour') + ':' + get('minute') + ':' + get('second');
     }
 
     function loadSensorHistory() {
@@ -310,7 +319,7 @@
                     const fuzzyVal = !isNaN(parsedFuzzy) ? parsedFuzzy.toFixed(2) : '0.00';
                     
                     const phColor = !isNaN(parsedPh) && (parsedPh < 6.5 || parsedPh > 8.5) ? 'text-terra font-bold' : 'text-forest-dark';
-                    const ntuColor = !isNaN(parsedNtu) && parsedNtu > 25 ? 'text-sand font-bold' : 'text-forest-dark';
+                    const ntuColor = !isNaN(parsedNtu) && parsedNtu > 3 ? 'text-sand font-bold' : 'text-forest-dark';
                     
                     html += '<tr class="' + (isNew ? 'animate-[fadeHighlight_0.8s_ease-out]' : '') + ' border-b border-mint/10 hover:bg-mist/80 transition-colors">';
                     html += '<td class="px-5 py-3.5"><span class="text-xs font-mono text-forest/40">' + (i+1) + '</span></td>';
@@ -356,12 +365,15 @@
                         const ntu = parseFloat(latest.ntu);
                         if (!isNaN(ntu)) {
                             cardNtuVal.innerHTML = ntu.toFixed(0) + '<span class="text-sm ml-1">NTU</span>';
-                            if (ntu <= 25) {
+                            if (ntu <= 1) {
                                 cardNtuStatus.className = 'text-xs font-bold text-mint bg-mint/10 px-2 py-0.5 rounded-lg';
-                                cardNtuStatus.innerText = translations.clear;
+                                cardNtuStatus.innerText = '{{ __("Aman") }}';
+                            } else if (ntu <= 3) {
+                                cardNtuStatus.className = 'text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-lg';
+                                cardNtuStatus.innerText = translations.normal;
                             } else {
                                 cardNtuStatus.className = 'text-xs font-bold text-sand bg-sand/10 px-2 py-0.5 rounded-lg';
-                                cardNtuStatus.innerText = translations.alert;
+                                cardNtuStatus.innerText = '{{ __("Tidak Aman") }}';
                             }
                         } else {
                             cardNtuVal.innerHTML = '0 <span class="text-sm ml-1">NTU</span>';

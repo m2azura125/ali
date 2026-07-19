@@ -219,7 +219,7 @@
 <div class="relative z-10 pt-4 border-t border-dashed border-gray-100">
 <div class="flex items-center gap-2">
 <span class="w-2 h-2 rounded-full bg-accent-safe"></span>
-<span class="text-sm font-medium text-text/70">{{ __('Jernih (< 5 NTU)') }}</span>
+<span class="text-sm font-medium text-text/70">{{ __('Aman (< 1 NTU)') }}</span>
 </div>
 </div>
 </div>
@@ -412,9 +412,18 @@
 
     function formatTime(dateStr) {
         if (!dateStr) return '-';
-        const d = new Date(dateStr);
+        // If dateStr has no timezone info, treat it as Asia/Makassar (GMT+8)
+        let d;
+        if (dateStr.includes('T') || dateStr.includes('+') || dateStr.includes('Z')) {
+            d = new Date(dateStr);
+        } else {
+            d = new Date(dateStr.replace(' ', 'T') + '+08:00');
+        }
         const months = {{ app()->getLocale() === 'en' ? "['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']" : "['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des']" }};
-        return String(d.getDate()).padStart(2,'0') + ' ' + months[d.getMonth()] + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+        const options = { timeZone: 'Asia/Makassar', day: '2-digit', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(d);
+        const get = (type) => (parts.find(p => p.type === type) || {}).value || '';
+        return get('day') + ' ' + months[parseInt(get('month')) - 1] + ' ' + get('hour') + ':' + get('minute') + ':' + get('second');
     }
 
     function loadSensorHistory() {
@@ -436,7 +445,7 @@
                     const tempVal = rec.temperature !== null ? parseFloat(rec.temperature).toFixed(1) + '\u00b0C' : '-';
                     const fuzzyVal = rec.fuzzy !== null ? parseFloat(rec.fuzzy).toFixed(2) : '-';
                     const phColor = rec.ph !== null && (rec.ph < 6.5 || rec.ph > 8.5) ? 'text-red-600 font-bold' : 'text-text';
-                    const ntuColor = rec.ntu !== null && rec.ntu > 25 ? 'text-amber-600 font-bold' : 'text-text';
+                    const ntuColor = rec.ntu !== null && rec.ntu > 3 ? 'text-amber-600 font-bold' : 'text-text';
                     html += '<tr class="' + (isNew ? 'animate-[fadeHighlight_0.8s_ease-out]' : '') + ' border-b border-muted/10 hover:bg-background/50 transition-colors">';
                     html += '<td class="px-5 py-3.5"><span class="text-xs font-mono text-text/40">' + (i+1) + '</span></td>';
                     html += '<td class="px-5 py-3.5"><span class="font-mono font-bold ' + phColor + '">' + phVal + '</span></td>';
